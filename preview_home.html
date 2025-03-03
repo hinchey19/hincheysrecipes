@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe App - Home</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+        }
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 32px;
+            height: 32px;
+            background-color: #4f46e5;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+        }
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 6px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        .nav-link.active {
+            background-color: #ede9fe;
+            color: #4f46e5;
+        }
+        .nav-icon {
+            margin-right: 10px;
+        }
+        .hero {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+        }
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        }
+        .hero-content {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            color: white;
+            max-width: 800px;
+        }
+        .badge {
+            background-color: #4f46e5;
+            color: white;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+        .meta {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .meta div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .view-all {
+            font-size: 14px;
+            color: #4f46e5;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .recipe-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background-color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-image-container {
+            height: 200px;
+            position: relative;
+        }
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(79, 70, 229, 0.9);
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+        .card-content {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .card-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .category-card {
+            height: 150px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .category-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .category-card:hover img {
+            transform: scale(1.05);
+        }
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+        }
+        .category-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 20px;
+            text-align: center;
+        }
+        .search-section {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+        .search-bar {
+            display: flex;
+            position: relative;
+        }
+        .search-input {
+            flex: 1;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #e5e7eb;
+            border-radius: 9999px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #4f46e5;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">R</div>
+                <h1>Recipify</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">📖</span>
+                        <span>Recipes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span>Meal Planner</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon">🛒</span>
+                        <span>Shopping List</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="main">
+            <div class="space-y-8">
+                <!-- Hero Section -->
+                <section class="hero">
+                    <img class="hero-image" src="https://moribyan.com/wp-content/uploads/2022/03/sushi-bake-3-scaled-1.jpg" alt="Sushi Bake">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <span class="badge">Featured Recipe</span>
+                        <h1>Sushi Bake</h1>
+                        <p>A delicious deconstructed sushi roll baked in a casserole dish with seasoned salmon, imitation crab, and creamy sriracha mayo sauce.</p>
+                        <div class="meta">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>40 min</span>
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>4 servings</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn">View Recipe</a>
+                    </div>
+                </section>
+
+                <!-- Search Section -->
+                <section class="search-section">
+                    <div class="search-bar">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" class="search-input" placeholder="Search recipes, ingredients, or categories...">
+                    </div>
+                </section>
+
+                <!-- Latest Recipes -->
+                <section>
+                    <div class="section-header">
+                        <h2>Latest Recipes</h2>
+                        <a href="#" class="view-all">
+                            View all 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                    <div class="recipe-grid">
+                        <!-- Sushi Bake Card -->
+                        <div class="recipe-card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://moribyan.com/wp-content/uploads/2022/03/sushi-bake-3-scaled-1.jpg" alt="Sushi Bake">
+                                <span class="card-badge">Japanese</span>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Sushi Bake</h3>
+                                <p class="card-description">A delicious deconstructed sushi roll baked in a casserole dish with seasoned salmon, imitation crab, and creamy sriracha mayo sauce.</p>
+                                <div class="card-meta">
+                                    <div>⏱️ 40 min</div>
+                                    <div>👥 4 servings</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pad Thai Card -->
+                        <div class="recipe-card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=1770&auto=format&fit=crop" alt="Pad Thai">
+                                <span class="card-badge">Thai</span>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Pad Thai</h3>
+                                <p class="card-description">A classic Thai stir-fried noodle dish with eggs, tofu, bean sprouts, peanuts, and tangy sauce.</p>
+                                <div class="card-meta">
+                                    <div>⏱️ 35 min</div>
+                                    <div>👥 4 servings</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chicken Teriyaki Card -->
+                        <div class="recipe-card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1180&auto=format&fit=crop" alt="Chicken Teriyaki">
+                                <span class="card-badge">Japanese</span>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Chicken Teriyaki</h3>
+                                <p class="card-description">Juicy chicken thighs glazed with sweet and savory teriyaki sauce, served with steamed rice.</p>
+                                <div class="card-meta">
+                                    <div>⏱️ 25 min</div>
+                                    <div>👥 4 servings</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Beef Pho Card -->
+                        <div class="recipe-card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=1974&auto=format&fit=crop" alt="Beef Pho">
+                                <span class="card-badge">Vietnamese</span>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Beef Pho</h3>
+                                <p class="card-description">Fragrant Vietnamese noodle soup with thinly sliced beef, herbs, and rice noodles in a flavorful broth.</p>
+                                <div class="card-meta">
+                                    <div>⏱️ 50 min</div>
+                                    <div>👥 6 servings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section>
+                    <div class="section-header">
+                        <h2>Recipe Categories</h2>
+                    </div>
+                    <div class="category-grid">
+                        <div class="category-card">
+                            <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1770&auto=format&fit=crop" alt="Japanese">
+                            <div class="category-overlay"></div>
+                            <div class="category-title">Japanese</div>
+                        </div>
+                        <div class="category-card">
+                            <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=1770&auto=format&fit=crop" alt="Thai">
+                            <div class="category-overlay"></div>
+                            <div class="category-title">Thai</div>
+                        </div>
+                        <div class="category-card">
+                            <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=1974&auto=format&fit=crop" alt="Vietnamese">
+                            <div class="category-overlay"></div>
+                            <div class="category-title">Vietnamese</div>
+                        </div>
+                        <div class="category-card">
+                            <img src="https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=1975&auto=format&fit=crop" alt="Korean">
+                            <div class="category-overlay"></div>
+                            <div class="category-title">Korean</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

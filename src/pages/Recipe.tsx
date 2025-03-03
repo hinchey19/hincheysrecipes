@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
@@ -20,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { mockRecipes } from "@/data/mockData";
+import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRecipe";
 import { cn } from "@/lib/utils";
 
 const Recipe = () => {
@@ -29,8 +29,8 @@ const Recipe = () => {
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
 
-  // Mock ingredients and instructions for the demo
-  const mockIngredients = [
+  // Use sushi bake data if it's the sushi bake recipe, otherwise use mock data
+  const ingredients = id === "0" ? sushiBakeIngredients : [
     "2 tablespoons olive oil",
     "1 large onion, diced",
     "2 garlic cloves, minced",
@@ -45,7 +45,7 @@ const Recipe = () => {
     "1 (15-ounce) can kidney beans, drained",
   ];
 
-  const mockInstructions = [
+  const instructions = id === "0" ? sushiBakeInstructions : [
     "Heat oil in a large pot over medium heat. Add onion and cook until soft, about 5 minutes.",
     "Add garlic and bell pepper, cook for another 2 minutes.",
     "Add ground beef and cook until browned, breaking it up as it cooks.",
@@ -148,7 +148,7 @@ const Recipe = () => {
                   <DialogTitle>Add Ingredients to Shopping List</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                  {mockIngredients.map((ingredient, index) => (
+                  {ingredients.map((ingredient, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`ingredient-${index}`}
@@ -198,7 +198,7 @@ const Recipe = () => {
           <TabsContent value="ingredients" className="mt-4 space-y-4">
             <div className="bg-card rounded-lg p-4 border border-border">
               <ul className="space-y-2">
-                {mockIngredients.map((ingredient, index) => (
+                {ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
                     <span>{ingredient}</span>
@@ -210,7 +210,7 @@ const Recipe = () => {
           <TabsContent value="instructions" className="mt-4 space-y-4">
             <div className="bg-card rounded-lg p-4 border border-border">
               <ol className="space-y-4">
-                {mockInstructions.map((instruction, index) => (
+                {instructions.map((instruction, index) => (
                   <li key={index} className="flex gap-4">
                     <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                       {index + 1}

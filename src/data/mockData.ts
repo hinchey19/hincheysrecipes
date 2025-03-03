@@ -1,7 +1,15 @@
-
 import { RecipeProps } from "@/components/RecipeCard";
 
 export const mockRecipes: RecipeProps[] = [
+  {
+    id: "0",
+    title: "Sushi Bake",
+    description: "A delicious deconstructed sushi roll baked in a casserole dish with seasoned salmon, imitation crab, and creamy sriracha mayo sauce.",
+    image: "/images/sushi-bake.jpg",
+    prepTime: 40,
+    servings: 4,
+    category: "Japanese"
+  },
   {
     id: "1",
     title: "Pad Thai",

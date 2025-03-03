@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Bake Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .hero {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            height: 350px;
+        }
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+        }
+        .hero-content {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: white;
+        }
+        .badge {
+            background-color: #4f46e5;
+            color: white;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+        .meta {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .meta div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .recipe-details {
+            margin-top: 30px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .tab.active {
+            border-bottom: 2px solid #4f46e5;
+            font-weight: 500;
+            color: #4f46e5;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .ingredients li, .instructions li {
+            margin-bottom: 10px;
+        }
+        .instructions li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 35px;
+        }
+        .instructions li::before {
+            content: counter(step-counter);
+            background-color: #4f46e5;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .ingredients li {
+            position: relative;
+            padding-left: 20px;
+        }
+        .ingredients li::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background-color: #4f46e5;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <img class="hero-image" src="https://moribyan.com/wp-content/uploads/2022/03/sushi-bake-3-scaled-1.jpg" alt="Sushi Bake">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="badge">Featured Recipe</span>
+            <h1>Sushi Bake</h1>
+            <p>A delicious deconstructed sushi roll baked in a casserole dish with seasoned salmon, imitation crab, and creamy sriracha mayo sauce.</p>
+            <div class="meta">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>40 min</span>
+                </div>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>4 servings</span>
+                </div>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <span>Japanese</span>
+                </div>
+            </div>
+            <a href="#" class="btn">View Recipe</a>
+        </div>
+    </div>
+
+    <div class="recipe-details">
+        <h2>Sushi Bake</h2>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('ingredients')">Ingredients</div>
+            <div class="tab" onclick="showTab('instructions')">Instructions</div>
+        </div>
+        
+        <div id="ingredients" class="tab-content active">
+            <ul class="ingredients">
+                <li>1/2 lb salmon, seasoned to preference</li>
+                <li>1/2 lb imitation crab, shredded & cut into smaller pieces</li>
+                <li>3 oz cream cheese</li>
+                <li>1/4 cup Japanese mayo</li>
+                <li>1 TBSP sriracha</li>
+                <li>2-3 cups cooked rice</li>
+                <li>2 TBSP rice vinegar</li>
+                <li>Furikake / shredded seaweed</li>
+            </ul>
+        </div>
+        
+        <div id="instructions" class="tab-content">
+            <ol class="instructions">
+                <li>Season salmon to preference. I seasoned mine with garlic powder, salt & black pepper. And then airfry at 400 for 9 mins. If your salmon is thicker, you may have to cook more.</li>
+                <li>Then shred salmon and add it into your shredded imitation crab.</li>
+                <li>Then add the rest of your ingredients: cream cheese, Japanese Mayo & sriracha. Combine well and set aside.</li>
+                <li>Combine 2-3 cups of cooked rice with 2 TBSP rice vinegar. Mix well. Then pour rice into an oven safe dish and flatten it/ create an flat - equal surface.</li>
+                <li>Top the rice off with shredded seaweed or furikake. I used 3 seaweed sheets.</li>
+                <li>Then top your rice + seaweed off with your salmon mixture and spread it evenly.</li>
+                <li>Bake at 380 for 10 mins (broil for 2-3 mins optional).</li>
+                <li>I served my sushi bake wrapped in seaweed. I also like to at cucumbers and/ or avocados into the wrap but I didn't have any.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected tab
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html> 
