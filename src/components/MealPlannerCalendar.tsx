@@ -1,11 +1,13 @@
-
 import React, { useState } from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Users, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { RecipeProps } from "./RecipeCard";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface MealPlan {
   date: Date;
@@ -15,6 +17,7 @@ interface MealPlan {
     type: "breakfast" | "lunch" | "dinner";
     recipeId: string | null;
   }[];
+  servingSize?: number;
 }
 
 interface MealPlannerCalendarProps {
@@ -22,6 +25,9 @@ interface MealPlannerCalendarProps {
   mealPlans: MealPlan[];
   onAddMeal: (date: Date, type: "breakfast" | "lunch" | "dinner", recipeId: string) => void;
   onRemoveMeal: (date: Date, mealId: string) => void;
+  onUpdateServingSize: (date: Date, servingSize: number) => void;
+  onSelectMealForCalculation: (meal: {id: string, name: string, recipeId: string, date: Date}, isSelected: boolean) => void;
+  selectedMeals: {id: string, name: string, recipeId: string, date: Date}[];
 }
 
 export const MealPlannerCalendar = ({
@@ -29,6 +35,9 @@ export const MealPlannerCalendar = ({
   mealPlans,
   onAddMeal,
   onRemoveMeal,
+  onUpdateServingSize,
+  onSelectMealForCalculation,
+  selectedMeals,
 }: MealPlannerCalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "dinner">("dinner");
@@ -59,10 +68,26 @@ export const MealPlannerCalendar = ({
     return mealPlan?.meals || [];
   };
 
+  const getServingSizeForDate = (date: Date) => {
+    const mealPlan = mealPlans.find((mp) => isSameDay(mp.date, date));
+    return mealPlan?.servingSize || 4;
+  };
+
   const handleAddMeal = (date: Date, recipeId: string) => {
     if (selectedMealType) {
       onAddMeal(date, selectedMealType, recipeId);
     }
+  };
+
+  const handleServingSizeChange = (date: Date, value: string) => {
+    const servingSize = parseInt(value);
+    if (!isNaN(servingSize) && servingSize > 0) {
+      onUpdateServingSize(date, servingSize);
+    }
+  };
+
+  const isMealSelected = (mealId: string) => {
+    return selectedMeals.some(meal => meal.id === mealId);
   };
 
   return (
@@ -92,72 +117,112 @@ export const MealPlannerCalendar = ({
           </div>
         ))}
 
-        {days.map(({ date }) => (
-          <div key={date.toISOString()} className="border border-border rounded-md p-2 h-[180px] overflow-y-auto">
-            <div className="space-y-2">
-              {["breakfast", "lunch", "dinner"].map((type) => {
-                const meals = getMealsForDate(date).filter((m) => m.type === type);
-                return (
-                  <div key={type} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium capitalize">{type}</span>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-5 w-5"
-                            onClick={() => {
-                              setSelectedDate(date);
-                              setSelectedMealType(type as "breakfast" | "lunch" | "dinner");
-                            }}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-60 p-2" align="center">
-                          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                            <h4 className="text-sm font-medium mb-1">Select Recipe</h4>
-                            {recipes.map(recipe => (
-                              <button
-                                key={recipe.id}
-                                className="w-full text-left px-2 py-1 text-sm rounded-md hover:bg-accent transition-colors"
-                                onClick={() => {
-                                  handleAddMeal(date, recipe.id);
-                                }}
-                              >
-                                {recipe.title}
-                              </button>
-                            ))}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    {meals.map((meal) => {
-                      const recipe = recipes.find(r => r.id === meal.recipeId);
-                      return recipe ? (
-                        <div 
-                          key={meal.id} 
-                          className="text-xs p-1.5 rounded bg-accent flex items-center justify-between"
-                        >
-                          <span className="truncate">{recipe.title}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 ml-1"
-                            onClick={() => onRemoveMeal(date, meal.id)}
-                          >
-                            <X className="h-2.5 w-2.5" />
-                          </Button>
-                        </div>
-                      ) : null;
-                    })}
+        {days.map(({ date }) => {
+          const hasMeals = getMealsForDate(date).length > 0;
+          
+          return (
+            <div key={date.toISOString()} className="border border-border rounded-md p-2 h-[220px] overflow-y-auto">
+              {hasMeals && (
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3 text-muted-foreground" />
+                    <Input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={getServingSizeForDate(date)}
+                      onChange={(e) => handleServingSizeChange(date, e.target.value)}
+                      className="h-6 w-12 text-xs px-1"
+                    />
                   </div>
-                );
-              })}
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                {["breakfast", "lunch", "dinner"].map((type) => {
+                  const meals = getMealsForDate(date).filter((m) => m.type === type);
+                  return (
+                    <div key={type} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium capitalize">{type}</span>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-5 w-5"
+                              onClick={() => {
+                                setSelectedDate(date);
+                                setSelectedMealType(type as "breakfast" | "lunch" | "dinner");
+                              }}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-60 p-2" align="center">
+                            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                              <h4 className="text-sm font-medium mb-1">Select Recipe</h4>
+                              {recipes.map(recipe => (
+                                <button
+                                  key={recipe.id}
+                                  className="w-full text-left px-2 py-1 text-sm rounded-md hover:bg-accent transition-colors"
+                                  onClick={() => {
+                                    handleAddMeal(date, recipe.id);
+                                  }}
+                                >
+                                  {recipe.title}
+                                </button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      {meals.map((meal) => {
+                        const recipe = recipes.find(r => r.id === meal.recipeId);
+                        const isSelected = isMealSelected(meal.id);
+                        
+                        return recipe ? (
+                          <div 
+                            key={meal.id} 
+                            className={cn(
+                              "text-xs p-1.5 rounded flex items-center justify-between",
+                              isSelected ? "bg-primary/20" : "bg-accent"
+                            )}
+                          >
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                              <Checkbox 
+                                id={`meal-${meal.id}`}
+                                checked={isSelected}
+                                onCheckedChange={(checked) => {
+                                  onSelectMealForCalculation({
+                                    id: meal.id,
+                                    name: recipe.title,
+                                    recipeId: recipe.id,
+                                    date: date
+                                  }, !!checked);
+                                }}
+                                className="h-3 w-3"
+                              />
+                              <span className="truncate">{recipe.title}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-4 w-4 ml-1 flex-shrink-0"
+                              onClick={() => onRemoveMeal(date, meal.id)}
+                            >
+                              <X className="h-2.5 w-2.5" />
+                            </Button>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
