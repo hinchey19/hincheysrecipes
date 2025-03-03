@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
@@ -44,14 +43,14 @@ export const Layout = ({ children }: LayoutProps) => {
       <div className="min-h-screen flex w-full">
         <Sidebar className="border-r border-border bg-card">
           <SidebarHeader className="p-4">
-            <div className="flex items-center px-2">
-              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-                <Book className="text-primary-foreground w-5 h-5" />
+            <div className="flex flex-col items-center px-2">
+              <div className="w-12 h-12 rounded-full overflow-hidden mb-2">
+                <img src="/chef-logo.jpg" alt="Chef logo" className="w-full h-full object-cover" />
               </div>
-              <h1 className="text-xl font-semibold ml-2">Recipify</h1>
+              <h1 className="text-2xl font-bold text-center">Hinchey's Recipes</h1>
             </div>
           </SidebarHeader>
-          <SidebarContent className="px-2">
+          <SidebarContent className="px-2 mt-4">
             <SidebarMenu>
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.name}>
