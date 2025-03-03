@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Clock, Users, Search } from "lucide-react";
@@ -20,8 +19,8 @@ const Index = () => {
       recipe.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Get featured recipe (first one for demo)
-  const featuredRecipe = mockRecipes[0];
+  // Get featured recipe (Roasted Leg of Lamb)
+  const featuredRecipe = mockRecipes.find(recipe => recipe.id === "13") || mockRecipes[0];
   
   // Get latest 4 recipes for carousel
   const latestRecipes = mockRecipes.slice(0, 4);

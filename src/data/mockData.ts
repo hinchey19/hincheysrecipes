@@ -11,6 +11,15 @@ export const mockRecipes: RecipeProps[] = [
     category: "Japanese"
   },
   {
+    id: "13",
+    title: "Roasted Leg of Lamb",
+    description: "A flavorful roasted lamb leg with Asian-inspired marinade, finished with a crispy exterior and tender, juicy meat inside.",
+    image: "/roasted-lamb-leg.jpg",
+    prepTime: 180,
+    servings: 6,
+    category: "American"
+  },
+  {
     id: "1",
     title: "Pad Thai",
     description: "A classic Thai stir-fried noodle dish with eggs, tofu, bean sprouts, peanuts, and tangy sauce.",

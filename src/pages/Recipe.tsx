@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { mockRecipes } from "@/data/mockData";
 import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRecipe";
+import { roastedLambIngredients, roastedLambInstructions } from "@/data/roastedLambRecipe";
 import { cn } from "@/lib/utils";
 
 const Recipe = () => {
@@ -29,8 +30,8 @@ const Recipe = () => {
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
 
-  // Use sushi bake data if it's the sushi bake recipe, otherwise use mock data
-  const ingredients = id === "0" ? sushiBakeIngredients : [
+  // Use specific recipe data based on ID
+  let ingredients = [
     "2 tablespoons olive oil",
     "1 large onion, diced",
     "2 garlic cloves, minced",
@@ -45,7 +46,7 @@ const Recipe = () => {
     "1 (15-ounce) can kidney beans, drained",
   ];
 
-  const instructions = id === "0" ? sushiBakeInstructions : [
+  let instructions = [
     "Heat oil in a large pot over medium heat. Add onion and cook until soft, about 5 minutes.",
     "Add garlic and bell pepper, cook for another 2 minutes.",
     "Add ground beef and cook until browned, breaking it up as it cooks.",
@@ -54,6 +55,15 @@ const Recipe = () => {
     "Add kidney beans and cook for another 10 minutes.",
     "Taste and adjust seasoning if needed. Serve hot with your favorite toppings.",
   ];
+
+  // Set recipe-specific data
+  if (id === "0") {
+    ingredients = sushiBakeIngredients;
+    instructions = sushiBakeInstructions;
+  } else if (id === "13") {
+    ingredients = roastedLambIngredients;
+    instructions = roastedLambInstructions;
+  }
 
   const handleAddToShoppingList = () => {
     if (ingredientsToAdd.length === 0) {
