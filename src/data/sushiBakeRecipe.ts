@@ -19,5 +19,5 @@ export const sushiBakeInstructions = [
   "Top the rice off with shredded seaweed or furikake. I used 3 seaweed sheets.",
   "Then top your rice + seaweed off with your salmon mixture and spread it evenly.",
   "Bake at 380 for 10 mins (broil for 2-3 mins optional).",
-  "I served my sushi bake wrapped in seaweed. I also like to at cucumbers and/ or avocados into the wrap but I didn't have any."
+  "I served my sushi bake wrapped in seaweed. I also like to add cucumbers and/ or avocados into the wrap."
 ]; 
