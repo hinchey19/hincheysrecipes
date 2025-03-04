@@ -40,13 +40,41 @@ interface MealPlan {
 }
 
 const MealPlanner = () => {
-  // Initialize with current week and empty meal plans
-  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  // Load meal plans from localStorage if available
+  const loadMealPlansFromStorage = () => {
+    try {
+      const storedMealPlans = localStorage.getItem('mealPlans');
+      if (storedMealPlans) {
+        // Parse the stored meal plans and convert date strings back to Date objects
+        const parsedMealPlans = JSON.parse(storedMealPlans);
+        return parsedMealPlans.map((plan: any) => ({
+          ...plan,
+          date: new Date(plan.date)
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Error loading meal plans from localStorage:', error);
+      return [];
+    }
+  };
+
+  // Initialize with current week and empty meal plans or load from localStorage
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>(loadMealPlansFromStorage());
   const [defaultServingSize, setDefaultServingSize] = useState<number>(4);
   const [selectedMeals, setSelectedMeals] = useState<{id: string, name: string, recipeId: string, date: Date}[]>([]);
   const [showCalculateDialog, setShowCalculateDialog] = useState(false);
   const [calculatedIngredients, setCalculatedIngredients] = useState<{name: string, quantity: string, category: string}[]>([]);
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
+
+  // Save meal plans to localStorage whenever they change
+  const saveMealPlansToStorage = (updatedMealPlans: MealPlan[]) => {
+    try {
+      localStorage.setItem('mealPlans', JSON.stringify(updatedMealPlans));
+    } catch (error) {
+      console.error('Error saving meal plans to localStorage:', error);
+    }
+  };
 
   const addMealToDate = (date: Date, type: "breakfast" | "lunch" | "dinner", recipeId: string) => {
     const recipe = mockRecipes.find(r => r.id === recipeId);
@@ -108,6 +136,8 @@ const MealPlanner = () => {
         description: `${recipe.title} added to ${type} on ${date.toLocaleDateString()}`,
       });
 
+      // Save to localStorage
+      saveMealPlansToStorage(newPlans);
       return newPlans;
     });
   };
@@ -137,6 +167,8 @@ const MealPlanner = () => {
         });
       }
 
+      // Save to localStorage
+      saveMealPlansToStorage(newPlans);
       return newPlans;
     });
   };
@@ -153,6 +185,8 @@ const MealPlanner = () => {
         newPlans[planIndex].servingSize = servingSize;
       }
 
+      // Save to localStorage
+      saveMealPlansToStorage(newPlans);
       return newPlans;
     });
   };
@@ -169,7 +203,18 @@ const MealPlanner = () => {
     // This is a simplified calculation - in a real app, you would parse ingredients more precisely
     const ingredients: {name: string, quantity: string, category: string}[] = [];
     
-    selectedMeals.forEach(meal => {
+    // If no meals are selected, use all meals from the meal plans
+    const mealsToCalculate = selectedMeals.length > 0 ? selectedMeals : 
+      mealPlans.flatMap(plan => 
+        plan.meals.map(meal => ({
+          id: meal.id,
+          name: meal.name,
+          recipeId: meal.recipeId || "",
+          date: plan.date
+        }))
+      ).filter(meal => meal.recipeId);
+    
+    mealsToCalculate.forEach(meal => {
       const recipe = mockRecipes.find(r => r.id === meal.recipeId);
       if (!recipe) return;
       
@@ -186,23 +231,42 @@ const MealPlanner = () => {
       // For demo purposes, we'll use some mock ingredients
       if (meal.recipeId === "0") { // Sushi Bake
         recipeIngredients = [
-          "2 cups sushi rice",
-          "3 tbsp rice vinegar",
-          "1 lb imitation crab meat",
-          "1/2 cup mayonnaise",
-          "2 tbsp sriracha",
-          "1 avocado",
-          "2 sheets nori seaweed"
+          "1/2 lb salmon, seasoned to preference",
+          "1/2 lb imitation crab, shredded & cut into smaller pieces",
+          "3 oz cream cheese",
+          "1/4 cup Japanese mayo",
+          "1 TBSP sriracha",
+          "2-3 cups cooked rice",
+          "2 TBSP rice vinegar",
+          "Furikake / shredded seaweed",
+          "1 avocado, sliced for topping"
+        ];
+      } else if (meal.recipeId === "1") { // Pad Thai
+        recipeIngredients = [
+          "8 oz rice noodles",
+          "2 tbsp vegetable oil",
+          "2 eggs, beaten",
+          "1 lb shrimp or chicken, cut into small pieces",
+          "2 cloves garlic, minced",
+          "1 cup bean sprouts",
+          "3 tbsp fish sauce",
+          "2 tbsp sugar",
+          "1 lime, cut into wedges",
+          "1/4 cup peanuts, crushed",
+          "2 green onions, chopped"
         ];
       } else if (meal.recipeId === "13") { // Roasted Leg of Lamb
         recipeIngredients = [
-          "1 Lamb leg",
-          "2 Onion (sliced)",
-          "Green onion (chopped)",
-          "Ginger (sliced)",
-          "Garlic (chopped)",
+          "1 Lamb leg (about 4-5 lbs)",
+          "2 Onions, sliced",
+          "4 Green onions, chopped",
+          "2-inch piece Ginger, sliced",
+          "4 cloves Garlic, chopped",
           "2 TBSP Cooking wine",
-          "2 TBSP Light soy sauce"
+          "2 TBSP Light soy sauce",
+          "1 TBSP Five spice powder",
+          "1 tsp Salt",
+          "1/2 tsp Black pepper"
         ];
       } else {
         recipeIngredients = [
@@ -280,6 +344,23 @@ const MealPlanner = () => {
     }
     
     // In a real app, you would add these to your shopping list state or database
+    // For this demo, we'll use localStorage to persist the shopping list
+    const existingItems = localStorage.getItem('shoppingList') ? 
+      JSON.parse(localStorage.getItem('shoppingList') || '[]') : [];
+    
+    const newItems = ingredientsToAdd.map(item => {
+      const [name, quantity] = item.split(' - ');
+      return {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: name,
+        quantity: quantity || 'As needed',
+        checked: false,
+        category: getCategoryForIngredient(name)
+      };
+    });
+    
+    localStorage.setItem('shoppingList', JSON.stringify([...existingItems, ...newItems]));
+    
     toast({
       title: "Added to shopping list",
       description: `${ingredientsToAdd.length} ingredients have been added to your shopping list.`,
@@ -409,7 +490,24 @@ const MealPlanner = () => {
               )}
             </div>
             
-            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col gap-2 pt-4">
+              <div className="flex gap-2">
+                <Button 
+                  onClick={addToShoppingList}
+                  className="flex-1"
+                  disabled={ingredientsToAdd.length === 0}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Shopping List
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => window.open("https://www.instacart.com", "_blank")}
+                >
+                  Order on Instacart
+                </Button>
+              </div>
               <Button 
                 variant="outline" 
                 onClick={() => {
@@ -417,26 +515,11 @@ const MealPlanner = () => {
                   setSelectedMeals([]);
                   setIngredientsToAdd([]);
                 }}
-                className="sm:order-1"
+                className="w-full"
               >
                 Cancel
               </Button>
-              <Button 
-                onClick={addToShoppingList}
-                className="w-full sm:w-auto sm:order-2"
-                disabled={ingredientsToAdd.length === 0}
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Shopping List
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto sm:order-3"
-                onClick={() => window.open("https://www.instacart.com", "_blank")}
-              >
-                Order on Instacart
-              </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

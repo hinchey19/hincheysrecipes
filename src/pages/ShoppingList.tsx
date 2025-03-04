@@ -46,12 +46,32 @@ const initialItems: ShoppingItemProps[] = [
 ];
 
 const ShoppingList = () => {
-  const [items, setItems] = useState<ShoppingItemProps[]>(initialItems);
+  // Load items from localStorage if available, otherwise use initialItems
+  const loadItemsFromStorage = () => {
+    try {
+      const storedItems = localStorage.getItem('shoppingList');
+      return storedItems ? JSON.parse(storedItems) : initialItems;
+    } catch (error) {
+      console.error('Error loading shopping list from localStorage:', error);
+      return initialItems;
+    }
+  };
+
+  const [items, setItems] = useState<ShoppingItemProps[]>(loadItemsFromStorage());
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("");
   const [showChecked, setShowChecked] = useState(true);
   const [showInstacartDialog, setShowInstacartDialog] = useState(false);
+
+  // Save items to localStorage whenever they change
+  const saveItemsToStorage = (updatedItems: ShoppingItemProps[]) => {
+    try {
+      localStorage.setItem('shoppingList', JSON.stringify(updatedItems));
+    } catch (error) {
+      console.error('Error saving shopping list to localStorage:', error);
+    }
+  };
 
   // Group the items by category
   const groupedItems: ShoppingItemGroup[] = items
@@ -90,7 +110,9 @@ const ShoppingList = () => {
       checked: false,
     };
 
-    setItems(prevItems => [...prevItems, newItem]);
+    const updatedItems = [...items, newItem];
+    setItems(updatedItems);
+    saveItemsToStorage(updatedItems);
     setNewItemName("");
     setNewItemQuantity("");
     
@@ -101,17 +123,19 @@ const ShoppingList = () => {
   };
 
   const handleToggleItem = (id: string) => {
-    setItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
+    const updatedItems = items.map(item =>
+      item.id === id ? { ...item, checked: !item.checked } : item
     );
+    setItems(updatedItems);
+    saveItemsToStorage(updatedItems);
   };
 
   const handleDeleteItem = (id: string) => {
     const itemToDelete = items.find(item => item.id === id);
+    const updatedItems = items.filter(item => item.id !== id);
     
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
+    setItems(updatedItems);
+    saveItemsToStorage(updatedItems);
     
     if (itemToDelete) {
       toast({
@@ -132,7 +156,9 @@ const ShoppingList = () => {
       return;
     }
     
-    setItems(prevItems => prevItems.filter(item => !item.checked));
+    const updatedItems = items.filter(item => !item.checked);
+    setItems(updatedItems);
+    saveItemsToStorage(updatedItems);
     
     toast({
       title: "Checked items cleared",
