@@ -75,15 +75,6 @@ export const mockRecipes: RecipeProps[] = [
     category: "Japanese"
   },
   {
-    id: "3",
-    title: "Beef Pho",
-    description: "Fragrant Vietnamese noodle soup with thinly sliced beef, herbs, and rice noodles in a flavorful broth.",
-    image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=1974&auto=format&fit=crop",
-    prepTime: 50,
-    servings: 6,
-    category: "Vietnamese"
-  },
-  {
     id: "4",
     title: "Korean Bibimbap",
     description: "A colorful mixed rice bowl topped with assorted vegetables, gochujang, and a fried egg.",
