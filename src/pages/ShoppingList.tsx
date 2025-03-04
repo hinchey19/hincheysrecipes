@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { ShoppingListItem, ShoppingItemProps } from "@/components/ShoppingListItem";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash, Check, ShoppingCart, Download, Share } from "lucide-react";
+import { Plus, Trash, Check, ShoppingCart, Download, Share, Trash2, Calendar } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
@@ -166,6 +166,24 @@ const ShoppingList = () => {
     });
   };
 
+  const handleClearAll = () => {
+    if (items.length === 0) {
+      toast({
+        title: "No items to clear",
+        description: "Your shopping list is already empty.",
+      });
+      return;
+    }
+    
+    setItems([]);
+    saveItemsToStorage([]);
+    
+    toast({
+      title: "Shopping list cleared",
+      description: "All items have been removed from your shopping list.",
+    });
+  };
+
   const handleExportToInstacart = () => {
     // In a real app, this would integrate with Instacart's API
     // For now, we'll just show a dialog with the items
@@ -211,11 +229,29 @@ const ShoppingList = () => {
     });
   };
 
+  // Format current date
+  const formatDate = () => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return now.toLocaleDateString('en-US', options);
+  };
+
   return (
     <Layout>
       <div className="space-y-8 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold">Shopping List</h1>
+          <div>
+            <h1 className="text-2xl font-bold">Shopping List</h1>
+            <p className="text-sm text-muted-foreground flex items-center mt-1">
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              {formatDate()}
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button 
               variant="outline" 
@@ -233,6 +269,15 @@ const ShoppingList = () => {
             >
               <Trash className="h-3.5 w-3.5 mr-1" />
               Clear Checked
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleClearAll}
+              className="text-xs text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              Clear All
             </Button>
             <Button 
               variant="outline" 

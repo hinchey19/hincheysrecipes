@@ -42,6 +42,7 @@ export const MealPlannerCalendar = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "dinner">("dinner");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [openPopoverMealId, setOpenPopoverMealId] = useState<string | null>(null);
 
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
   
@@ -88,6 +89,10 @@ export const MealPlannerCalendar = ({
 
   const isMealSelected = (mealId: string) => {
     return selectedMeals.some(meal => meal.id === mealId);
+  };
+
+  const getMealTypeId = (date: Date, type: string) => {
+    return `${date.toISOString()}-${type}`;
   };
 
   return (
@@ -145,16 +150,23 @@ export const MealPlannerCalendar = ({
                     <div key={type} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium capitalize">{type}</span>
-                        <Popover>
+                        <Popover 
+                          open={openPopoverMealId === getMealTypeId(date, type)}
+                          onOpenChange={(open) => {
+                            if (open) {
+                              setOpenPopoverMealId(getMealTypeId(date, type));
+                              setSelectedDate(date);
+                              setSelectedMealType(type as "breakfast" | "lunch" | "dinner");
+                            } else {
+                              setOpenPopoverMealId(null);
+                            }
+                          }}
+                        >
                           <PopoverTrigger asChild>
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               className="h-5 w-5"
-                              onClick={() => {
-                                setSelectedDate(date);
-                                setSelectedMealType(type as "breakfast" | "lunch" | "dinner");
-                              }}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
@@ -173,6 +185,16 @@ export const MealPlannerCalendar = ({
                                   {recipe.title}
                                 </button>
                               ))}
+                            </div>
+                            <div className="mt-2 flex justify-end">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => setOpenPopoverMealId(null)}
+                                className="text-xs"
+                              >
+                                Done
+                              </Button>
                             </div>
                           </PopoverContent>
                         </Popover>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { MealPlannerCalendar } from "@/components/MealPlannerCalendar";
 import { mockRecipes } from "@/data/mockData";
@@ -13,7 +13,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { ShoppingCart, Calculator } from "lucide-react";
+import { ShoppingCart, Calculator, CheckSquare, AlertCircle } from "lucide-react";
 import { 
   Dialog, 
   DialogContent, 
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface Meal {
   id: string;
@@ -67,6 +68,34 @@ const MealPlanner = () => {
   const [calculatedIngredients, setCalculatedIngredients] = useState<{name: string, quantity: string, category: string}[]>([]);
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
 
+  // Add state for shopping list
+  const [shoppingList, setShoppingList] = useState<any[]>(() => {
+    try {
+      const savedList = localStorage.getItem('shoppingList');
+      return savedList ? JSON.parse(savedList) : [];
+    } catch (error) {
+      console.error('Error loading shopping list:', error);
+      return [];
+    }
+  });
+
+  // Update shopping list when it changes in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const savedList = localStorage.getItem('shoppingList');
+        if (savedList) {
+          setShoppingList(JSON.parse(savedList));
+        }
+      } catch (error) {
+        console.error('Error loading shopping list:', error);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Save meal plans to localStorage whenever they change
   const saveMealPlansToStorage = (updatedMealPlans: MealPlan[]) => {
     try {
@@ -90,28 +119,30 @@ const MealPlanner = () => {
       );
 
       if (existingPlanIndex >= 0) {
-        // Check if we already have a meal of this type for this date
-        const existingMealIndex = newPlans[existingPlanIndex].meals.findIndex(
-          meal => meal.type === type
+        // Check if this recipe already exists for this meal type on this date
+        const recipeAlreadyExists = newPlans[existingPlanIndex].meals.some(
+          meal => meal.type === type && meal.recipeId === recipeId
         );
 
-        if (existingMealIndex >= 0) {
-          // Update existing meal
-          newPlans[existingPlanIndex].meals[existingMealIndex] = {
-            id: `${date.toISOString()}-${type}-${recipeId}`,
-            name: recipe.title,
-            type,
-            recipeId
-          };
-        } else {
-          // Add new meal to existing date
-          newPlans[existingPlanIndex].meals.push({
-            id: `${date.toISOString()}-${type}-${recipeId}`,
-            name: recipe.title,
-            type,
-            recipeId
+        // If recipe already exists for this meal type, don't add it again
+        if (recipeAlreadyExists) {
+          toast({
+            title: "Recipe already added",
+            description: `${recipe.title} is already added to ${type} on ${date.toLocaleDateString()}`,
           });
+          return newPlans;
         }
+
+        // Generate a unique ID for the new meal
+        const mealId = `${date.toISOString()}-${type}-${recipeId}-${Date.now()}`;
+        
+        // Add new meal to existing date
+        newPlans[existingPlanIndex].meals.push({
+          id: mealId,
+          name: recipe.title,
+          type,
+          recipeId
+        });
         
         // Set default serving size if not already set
         if (!newPlans[existingPlanIndex].servingSize) {
@@ -123,7 +154,7 @@ const MealPlanner = () => {
           date: new Date(date),
           servingSize: defaultServingSize,
           meals: [{
-            id: `${date.toISOString()}-${type}-${recipeId}`,
+            id: `${date.toISOString()}-${type}-${recipeId}-${Date.now()}`,
             name: recipe.title,
             type,
             recipeId
@@ -379,6 +410,22 @@ const MealPlanner = () => {
     );
   };
 
+  // Check if an ingredient is already in the shopping list
+  const isIngredientInShoppingList = (name: string): boolean => {
+    return shoppingList.some(item => 
+      item.name.toLowerCase() === name.toLowerCase()
+    );
+  };
+
+  // Select all ingredients that aren't already in the shopping list
+  const handleSelectAllIngredients = () => {
+    const newIngredientsToAdd = calculatedIngredients
+      .filter(ingredient => !isIngredientInShoppingList(ingredient.name))
+      .map(ingredient => `${ingredient.name} - ${ingredient.quantity}`);
+    
+    setIngredientsToAdd(newIngredientsToAdd);
+  };
+
   return (
     <Layout>
       <div className="space-y-8">
@@ -459,24 +506,48 @@ const MealPlanner = () => {
               </DialogDescription>
             </DialogHeader>
             
+            <div className="flex justify-end mb-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSelectAllIngredients}
+                className="text-xs"
+              >
+                <CheckSquare className="h-3.5 w-3.5 mr-1" />
+                Select All
+              </Button>
+            </div>
+            
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {calculatedIngredients.length === 0 ? (
                 <p className="text-center text-muted-foreground">No ingredients to calculate</p>
               ) : (
-                <>
-                  {calculatedIngredients.map((ingredient, index) => (
+                calculatedIngredients.map((ingredient, index) => {
+                  const ingredientKey = `${ingredient.name} - ${ingredient.quantity}`;
+                  const alreadyInList = isIngredientInShoppingList(ingredient.name);
+                  
+                  return (
                     <div key={index} className="flex items-start space-x-2">
                       <Checkbox 
                         id={`ingredient-${index}`}
-                        checked={ingredientsToAdd.includes(`${ingredient.name} - ${ingredient.quantity}`)}
-                        onCheckedChange={() => toggleIngredient(`${ingredient.name} - ${ingredient.quantity}`)}
+                        checked={ingredientsToAdd.includes(ingredientKey)}
+                        onCheckedChange={() => toggleIngredient(ingredientKey)}
+                        disabled={alreadyInList}
                       />
-                      <div>
+                      <div className="flex-1">
                         <label 
                           htmlFor={`ingredient-${index}`}
-                          className="text-sm font-medium cursor-pointer"
+                          className={cn(
+                            "text-sm font-medium cursor-pointer flex items-center"
+                          )}
                         >
                           {ingredient.name}
+                          {alreadyInList && (
+                            <span className="ml-2 inline-flex items-center text-xs text-amber-500">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              Already in list
+                            </span>
+                          )}
                         </label>
                         <div className="flex items-center mt-0.5 gap-2">
                           <span className="text-xs text-muted-foreground">{ingredient.quantity}</span>
@@ -485,8 +556,8 @@ const MealPlanner = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </>
+                  );
+                })
               )}
             </div>
             

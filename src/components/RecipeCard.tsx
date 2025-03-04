@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Clock, Users, Tag } from "lucide-react";
@@ -14,6 +13,8 @@ export interface RecipeProps {
   prepTime: number;
   servings: number;
   category: string;
+  ingredients?: string[];
+  instructions?: string[];
 }
 
 interface RecipeCardProps {

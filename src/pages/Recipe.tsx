@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   Clock, Users, ChevronLeft, Printer, Share, Plus, 
-  Check, ShoppingCart, Calendar 
+  Check, ShoppingCart, Calendar, Trash2, CheckSquare, AlertCircle
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,8 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger 
+  DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -23,14 +24,32 @@ import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRec
 import { roastedLambIngredients, roastedLambInstructions } from "@/data/roastedLambRecipe";
 import { cn } from "@/lib/utils";
 
+// Type for shopping list items
+interface ShoppingListItem {
+  ingredient: string;
+  recipeId: string;
+  recipeName: string;
+}
+
 const Recipe = () => {
   const { id } = useParams<{ id: string }>();
   const recipe = mockRecipes.find(r => r.id === id);
   
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
+  
+  // Get shopping list from localStorage or initialize empty array
+  const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
+    const savedList = localStorage.getItem('shoppingList');
+    return savedList ? JSON.parse(savedList) : [];
+  });
 
-  // Use specific recipe data based on ID
+  // Save shopping list to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+  }, [shoppingList]);
+
+  // Default recipe data
   let ingredients = [
     "2 tablespoons olive oil",
     "1 large onion, diced",
@@ -57,13 +76,33 @@ const Recipe = () => {
   ];
 
   // Set recipe-specific data
-  if (id === "0") {
+  if (recipe?.ingredients && recipe?.instructions) {
+    // Use ingredients and instructions directly from the recipe object if they exist
+    ingredients = recipe.ingredients;
+    instructions = recipe.instructions;
+  } else if (id === "0") {
     ingredients = sushiBakeIngredients;
     instructions = sushiBakeInstructions;
   } else if (id === "13") {
     ingredients = roastedLambIngredients;
     instructions = roastedLambInstructions;
   }
+
+  // Check if an ingredient is already in the shopping list
+  const isIngredientInShoppingList = (ingredient: string) => {
+    return shoppingList.some(item => 
+      item.ingredient === ingredient && item.recipeId === recipe?.id
+    );
+  };
+
+  const handleSelectAllIngredients = () => {
+    // Filter out ingredients that are already in the shopping list
+    const newIngredientsToAdd = ingredients.filter(ingredient => 
+      !isIngredientInShoppingList(ingredient)
+    );
+    
+    setIngredientsToAdd(newIngredientsToAdd);
+  };
 
   const handleAddToShoppingList = () => {
     if (ingredientsToAdd.length === 0) {
@@ -75,9 +114,54 @@ const Recipe = () => {
       return;
     }
     
+    // Check for duplicates
+    const duplicates: string[] = [];
+    const newItems: ShoppingListItem[] = [];
+    
+    ingredientsToAdd.forEach(ingredient => {
+      const isDuplicate = shoppingList.some(
+        item => item.ingredient === ingredient && item.recipeId === recipe?.id
+      );
+      
+      if (isDuplicate) {
+        duplicates.push(ingredient);
+      } else {
+        newItems.push({
+          ingredient,
+          recipeId: recipe?.id || '',
+          recipeName: recipe?.title || ''
+        });
+      }
+    });
+    
+    // Add non-duplicate items
+    if (newItems.length > 0) {
+      setShoppingList(prev => [...prev, ...newItems]);
+      
+      toast({
+        title: "Added to shopping list",
+        description: `${newItems.length} ingredients have been added to your shopping list.`,
+      });
+    }
+    
+    // Notify about duplicates if any
+    if (duplicates.length > 0) {
+      toast({
+        title: "Duplicate ingredients",
+        description: `${duplicates.length} ingredients were already in your shopping list from this recipe.`,
+        variant: "default",
+      });
+    }
+    
+    // Clear selection
+    setIngredientsToAdd([]);
+  };
+
+  const handleClearShoppingList = () => {
+    setShoppingList([]);
     toast({
-      title: "Added to shopping list",
-      description: `${ingredientsToAdd.length} ingredients have been added to your shopping list.`,
+      title: "Shopping list cleared",
+      description: "All items have been removed from your shopping list.",
     });
   };
 
@@ -157,32 +241,66 @@ const Recipe = () => {
                 <DialogHeader>
                   <DialogTitle>Add Ingredients to Shopping List</DialogTitle>
                 </DialogHeader>
+                <div className="flex justify-end mb-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleSelectAllIngredients}
+                    className="text-xs"
+                  >
+                    <CheckSquare className="h-3.5 w-3.5 mr-1" />
+                    Select All New
+                  </Button>
+                </div>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                  {ingredients.map((ingredient, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={`ingredient-${index}`}
-                        checked={ingredientsToAdd.includes(ingredient)}
-                        onCheckedChange={() => toggleIngredient(ingredient)}
-                      />
-                      <label 
-                        htmlFor={`ingredient-${index}`}
-                        className="text-sm cursor-pointer"
-                      >
-                        {ingredient}
-                      </label>
-                    </div>
-                  ))}
+                  {ingredients.map((ingredient, index) => {
+                    const alreadyInList = isIngredientInShoppingList(ingredient);
+                    return (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`ingredient-${index}`}
+                          checked={ingredientsToAdd.includes(ingredient)}
+                          onCheckedChange={() => toggleIngredient(ingredient)}
+                          disabled={alreadyInList}
+                        />
+                        <label 
+                          htmlFor={`ingredient-${index}`}
+                          className={cn(
+                            "text-sm cursor-pointer flex items-center",
+                            alreadyInList && "text-muted-foreground line-through"
+                          )}
+                        >
+                          {ingredient}
+                          {alreadyInList && (
+                            <span className="ml-2 inline-flex items-center text-xs text-amber-500">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              Already in list
+                            </span>
+                          )}
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button variant="outline" onClick={() => setIngredientsToAdd([])}>
-                    Clear
+                <DialogFooter className="flex justify-between items-center mt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleClearShoppingList}
+                    className="flex items-center gap-1 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Clear All
                   </Button>
-                  <Button onClick={handleAddToShoppingList}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Selected
-                  </Button>
-                </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setIngredientsToAdd([])}>
+                      Clear Selection
+                    </Button>
+                    <Button onClick={handleAddToShoppingList}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Selected
+                    </Button>
+                  </div>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
             <Button variant="outline" size="sm" onClick={handleAddToMealPlan}>

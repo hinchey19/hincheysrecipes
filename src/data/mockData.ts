@@ -20,6 +20,43 @@ export const mockRecipes: RecipeProps[] = [
     category: "American"
   },
   {
+    id: "14",
+    title: "Korean Braised Beef Short Ribs",
+    description: "Tender bone-in beef short ribs slowly braised in a sweet and savory sauce with vegetables until melt-in-your-mouth tender.",
+    image: "https://www.beyondkimchee.com/wp-content/uploads/2023/11/galbijjim-braised-short-ribs-20.jpg",
+    prepTime: 120,
+    servings: 6,
+    category: "Korean",
+    ingredients: [
+      "5 lbs bone-in short ribs",
+      "2 potatoes, peeled and cubed",
+      "3 carrots, peeled and cut into chunks",
+      "1 apple, peeled and diced",
+      "1 pear, peeled and diced",
+      "2 small onions, diced",
+      "1 whole garlic bulb, cloves separated and peeled",
+      "1/4 cup water (for blending sauce)",
+      "1/3 cup light soy sauce",
+      "1/4 cup dark soy sauce",
+      "2 tbsp oyster sauce",
+      "3 tbsp sugar",
+      "1 tbsp mirin",
+      "2 tbsp Korean spicy sauce (gochujang)",
+      "2 tbsp toasted sesame seeds",
+      "10 rice cakes (optional)"
+    ],
+    instructions: [
+      "Boil the short ribs in water briefly to remove impurities, then drain and rinse.",
+      "In a blender, combine apple, pear, onions, garlic and water to make a smooth sauce.",
+      "Place the short ribs and blended sauce in a large pot.",
+      "Add light soy sauce, dark soy sauce, oyster sauce, sugar, mirin, and Korean spicy sauce.",
+      "Bring to a boil, then reduce heat to low and simmer for about 1 hour until the sauce thickens.",
+      "Lightly pan-fry the carrots and potatoes until they turn golden brown.",
+      "Add the pan-fried carrots and potatoes to the pot, and continue cooking for another 30 minutes until vegetables are tender.",
+      "Serve hot, garnished with toasted sesame seeds."
+    ]
+  },
+  {
     id: "1",
     title: "Pad Thai",
     description: "A classic Thai stir-fried noodle dish with eggs, tofu, bean sprouts, peanuts, and tangy sauce.",
@@ -59,7 +96,7 @@ export const mockRecipes: RecipeProps[] = [
     id: "5",
     title: "Mango Sticky Rice",
     description: "Sweet Thai dessert made with glutinous rice, fresh mangoes, and coconut milk.",
-    image: "https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop",
+    image: "https://data.thefeedfeed.com/static/2020/07/08/15942348605f0617ec7410a.png",
     prepTime: 30,
     servings: 4,
     category: "Dessert"
@@ -72,24 +109,6 @@ export const mockRecipes: RecipeProps[] = [
     prepTime: 35,
     servings: 6,
     category: "Appetizer"
-  },
-  {
-    id: "7",
-    title: "Chicken Satay",
-    description: "Grilled skewers of marinated chicken served with a rich peanut sauce and cucumber relish.",
-    image: "https://images.unsplash.com/photo-1627308595171-d1b5d67129c4?q=80&w=1935&auto=format&fit=crop",
-    prepTime: 30,
-    servings: 4,
-    category: "Malaysian"
-  },
-  {
-    id: "8",
-    title: "Cucumber Kimchi",
-    description: "Refreshing and spicy fermented cucumber side dish with Korean chili flakes and garlic.",
-    image: "https://images.unsplash.com/photo-1583224464965-5c148f2c2f26?q=80&w=1770&auto=format&fit=crop",
-    prepTime: 20,
-    servings: 8,
-    category: "Korean"
   },
   {
     id: "9",
@@ -122,7 +141,7 @@ export const mockRecipes: RecipeProps[] = [
     id: "12",
     title: "Green Papaya Salad",
     description: "Spicy Thai salad with shredded unripe papaya, tomatoes, beans, and a tangy lime dressing.",
-    image: "https://images.unsplash.com/photo-1626200758062-5efd9ebeafdf?q=80&w=1770&auto=format&fit=crop",
+    image: "https://coleycooks.com/wp-content/uploads/2024/05/Thai-green-papaya-salad-2.jpg",
     prepTime: 15,
     servings: 4,
     category: "Thai"
