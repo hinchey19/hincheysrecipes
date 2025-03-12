@@ -8,7 +8,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "/images/sushi-bake.jpg",
     prepTime: 40,
     servings: 4,
-    category: "Japanese"
+    category: "Japanese",
+    dateAdded: "2023-05-15"
   },
   {
     id: "13",
@@ -17,7 +18,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "/roasted-lamb-leg.jpg",
     prepTime: 180,
     servings: 6,
-    category: "American"
+    category: "American",
+    dateAdded: "2023-06-15"
   },
   {
     id: "14",
@@ -27,6 +29,7 @@ export const mockRecipes: RecipeProps[] = [
     prepTime: 120,
     servings: 6,
     category: "Korean",
+    dateAdded: "2023-06-25",
     ingredients: [
       "5 lbs bone-in short ribs",
       "2 potatoes, peeled and cubed",
@@ -63,7 +66,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?q=80&w=1770&auto=format&fit=crop",
     prepTime: 35,
     servings: 4,
-    category: "Thai"
+    category: "Thai",
+    dateAdded: "2023-05-20"
   },
   {
     id: "2",
@@ -72,7 +76,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1180&auto=format&fit=crop",
     prepTime: 25,
     servings: 4,
-    category: "Japanese"
+    category: "Japanese",
+    dateAdded: "2023-05-25"
   },
   {
     id: "4",
@@ -81,7 +86,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=1975&auto=format&fit=crop",
     prepTime: 35,
     servings: 2,
-    category: "Korean"
+    category: "Korean",
+    dateAdded: "2023-05-30"
   },
   {
     id: "5",
@@ -90,7 +96,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://data.thefeedfeed.com/static/2020/07/08/15942348605f0617ec7410a.png",
     prepTime: 30,
     servings: 4,
-    category: "Dessert"
+    category: "Dessert",
+    dateAdded: "2023-06-01"
   },
   {
     id: "6",
@@ -99,7 +106,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1769&auto=format&fit=crop",
     prepTime: 35,
     servings: 6,
-    category: "Appetizer"
+    category: "Appetizer",
+    dateAdded: "2023-06-05"
   },
   {
     id: "9",
@@ -108,7 +116,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=1925&auto=format&fit=crop",
     prepTime: 20,
     servings: 4,
-    category: "Chinese"
+    category: "Chinese",
+    dateAdded: "2023-06-10"
   },
   {
     id: "10",
@@ -117,7 +126,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=1770&auto=format&fit=crop",
     prepTime: 5,
     servings: 2,
-    category: "Beverage"
+    category: "Beverage",
+    dateAdded: "2023-06-15"
   },
   {
     id: "11",
@@ -126,7 +136,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1770&auto=format&fit=crop",
     prepTime: 45,
     servings: 4,
-    category: "Japanese"
+    category: "Japanese",
+    dateAdded: "2023-06-20"
   },
   {
     id: "12",
@@ -135,7 +146,8 @@ export const mockRecipes: RecipeProps[] = [
     image: "https://coleycooks.com/wp-content/uploads/2024/05/Thai-green-papaya-salad-2.jpg",
     prepTime: 15,
     servings: 4,
-    category: "Thai"
+    category: "Thai",
+    dateAdded: "2023-07-01"
   },
   {
     id: "15",
@@ -145,6 +157,7 @@ export const mockRecipes: RecipeProps[] = [
     prepTime: 15,
     servings: 2,
     category: "Chinese",
+    dateAdded: "2023-07-10",
     ingredients: [
       "4 medium tomatoes (about 1 pound)",
       "4 large eggs",

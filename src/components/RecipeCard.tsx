@@ -13,6 +13,7 @@ export interface RecipeProps {
   prepTime: number;
   servings: number;
   category: string;
+  dateAdded?: string;
   ingredients?: string[];
   instructions?: string[];
 }

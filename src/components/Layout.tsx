@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
-  Book, Calendar, ShoppingCart, Search, Menu, X, ChevronRight, Home
+  Book, Calendar, ShoppingCart, Menu, X, ChevronRight, Home
 } from "lucide-react";
 import { 
   SidebarProvider, 
@@ -97,11 +97,6 @@ export const Layout = ({ children }: LayoutProps) => {
                   {navigation.find(item => item.href === location.pathname)?.name || 'Home'}
                 </h1>
               )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
             </div>
           </header>
           <main className="flex-1 overflow-auto">
