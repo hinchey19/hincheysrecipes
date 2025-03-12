@@ -158,11 +158,11 @@ export const mockRecipes: RecipeProps[] = [
     ],
     instructions: [
       "Cut tomatoes into small wedges and finely chop the scallion.",
-      "Crack eggs into a bowl and season with 1/4 teaspoon salt, white pepper, and oyster sauce. Beat eggs for a minute.",
+      "Crack eggs into a bowl and season with 1/4 teaspoon salt and white pepper. Beat eggs for a minute.",
       "Preheat a wok or large skillet over medium heat until it just starts to smoke. Add 2 tablespoons of oil and immediately add the eggs.",
       "Scramble the eggs until just cooked but still soft, then remove from the wok and set aside.",
       "Add the remaining 1 tablespoon oil to the wok, turn up the heat to high, and add the tomatoes and most of the scallions (reserve some for garnish).",
-      "Stir-fry for 1 minute, then add sugar, remaining 1/2 teaspoon salt, and 1/4 cup water.",
+      "Stir-fry for 1 minute, then add sugar, remaining 1/2 teaspoon salt, oyster sauce, and 1/4 cup water.",
       "Add the cooked eggs back to the wok and mix everything together.",
       "Cover the wok and cook for 1-2 minutes, until the tomatoes are completely softened.",
       "Uncover and continue to stir-fry over high heat until the sauce thickens to your liking.",
