@@ -79,7 +79,7 @@ export const mockRecipes: RecipeProps[] = [
     title: "Korean Bibimbap",
     description: "A colorful mixed rice bowl topped with assorted vegetables, gochujang, and a fried egg.",
     image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=1975&auto=format&fit=crop",
-    prepTime: 40,
+    prepTime: 35,
     servings: 2,
     category: "Korean"
   },
@@ -136,5 +136,38 @@ export const mockRecipes: RecipeProps[] = [
     prepTime: 15,
     servings: 4,
     category: "Thai"
+  },
+  {
+    id: "15",
+    title: "Chinese Tomato Egg Stir-fry",
+    description: "A classic Chinese home-style dish featuring fluffy scrambled eggs and juicy tomatoes in a sweet and tangy sauce.",
+    image: "https://hot-thai-kitchen.com/wp-content/uploads/2022/07/tomato-egg-sq.jpg",
+    prepTime: 15,
+    servings: 2,
+    category: "Chinese",
+    ingredients: [
+      "4 medium tomatoes (about 1 pound)",
+      "4 large eggs",
+      "1 scallion, finely chopped",
+      "3/4 teaspoon salt, divided",
+      "1/4 teaspoon white pepper",
+      "1/2 teaspoon sesame oil",
+      "1 teaspoon Shaoxing wine (or dry sherry)",
+      "3 tablespoons vegetable oil, divided",
+      "2 teaspoons sugar",
+      "1/4-1/2 cup water"
+    ],
+    instructions: [
+      "Cut tomatoes into small wedges and finely chop the scallion.",
+      "Crack eggs into a bowl and season with 1/4 teaspoon salt, white pepper, sesame oil, and Shaoxing wine. Beat eggs for a minute.",
+      "Preheat a wok or large skillet over medium heat until it just starts to smoke. Add 2 tablespoons of oil and immediately add the eggs.",
+      "Scramble the eggs until just cooked but still soft, then remove from the wok and set aside.",
+      "Add the remaining 1 tablespoon oil to the wok, turn up the heat to high, and add the tomatoes and most of the scallions (reserve some for garnish).",
+      "Stir-fry for 1 minute, then add sugar, remaining 1/2 teaspoon salt, and 1/4 cup water.",
+      "Add the cooked eggs back to the wok and mix everything together.",
+      "Cover the wok and cook for 1-2 minutes, until the tomatoes are completely softened.",
+      "Uncover and continue to stir-fry over high heat until the sauce thickens to your liking.",
+      "Garnish with the reserved scallions and serve immediately with steamed rice."
+    ]
   }
 ];
