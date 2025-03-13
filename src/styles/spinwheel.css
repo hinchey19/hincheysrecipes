@@ -157,4 +157,11 @@
     transform: translateY(100vh) rotate(720deg);
     opacity: 0;
   }
+}
+
+/* Make sure the spin wheel tab is hidden when printing */
+@media print {
+  .spin-wheel-tab {
+    display: none !important;
+  }
 } 

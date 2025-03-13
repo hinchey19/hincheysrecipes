@@ -209,6 +209,14 @@ const Recipe = () => {
     // Implement the share functionality
   };
 
+  // Function to generate a URL for the recipe that includes the recipe name
+  const generateRecipeUrl = () => {
+    if (!recipe) return '';
+    const baseUrl = window.location.origin;
+    const slug = recipe.title.toLowerCase().replace(/\s+/g, '-');
+    return `${baseUrl}/recipe/${recipe.id}/${slug}`;
+  };
+
   if (!recipe) {
     return (
       <Layout>
@@ -545,6 +553,7 @@ const Recipe = () => {
           
           <div className="print-footer">
             <p>Recipe from Hinchey's Recipes</p>
+            <p className="print-url">{generateRecipeUrl()}</p>
           </div>
         </div>
       </div>
@@ -714,6 +723,12 @@ const Recipe = () => {
               text-align: center;
               font-size: 8pt;
               color: #666;
+            }
+            
+            .print-url {
+              font-size: 7pt;
+              color: #888;
+              margin-top: 4pt;
             }
             
             @page {
