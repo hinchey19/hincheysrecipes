@@ -50,7 +50,40 @@ const ShoppingList = () => {
   const loadItemsFromStorage = () => {
     try {
       const storedItems = localStorage.getItem('shoppingList');
-      return storedItems ? JSON.parse(storedItems) : initialItems;
+      console.log('Loading shopping list from localStorage:', storedItems);
+      if (storedItems) {
+        const parsedItems = JSON.parse(storedItems);
+        console.log('Parsed shopping list items:', parsedItems);
+        // Ensure the items have the correct structure
+        if (Array.isArray(parsedItems)) {
+          return parsedItems.map(item => {
+            // Handle both old and new data structures
+            if (item.ingredient) {
+              // This is from the Recipe component
+              return {
+                id: item.id || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name: item.name || item.ingredient || 'Unknown Item',
+                quantity: item.quantity || '1',
+                category: item.category || 'Other',
+                checked: item.checked || false,
+                recipeId: item.recipeId,
+                recipeName: item.recipeName
+              };
+            } else {
+              // This is already in the correct format
+              return {
+                id: item.id || Date.now().toString(),
+                name: item.name || 'Unknown Item',
+                quantity: item.quantity || '1',
+                category: item.category || 'Other',
+                checked: item.checked || false
+              };
+            }
+          });
+        }
+      }
+      console.log('Using initial items for shopping list');
+      return initialItems;
     } catch (error) {
       console.error('Error loading shopping list from localStorage:', error);
       return initialItems;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { 
   Clock, Users, ChevronLeft, Printer, Share, Plus, 
   Check, ShoppingCart, Calendar, Trash2, CheckSquare, AlertCircle,
@@ -19,10 +19,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { mockRecipes } from "@/data/mockData";
 import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRecipe";
 import { roastedLambIngredients, roastedLambInstructions } from "@/data/roastedLambRecipe";
+import { padThaiIngredients, padThaiInstructions, padThaiTips } from "@/data/padThaiRecipe";
 import { cn } from "@/lib/utils";
 
 // Type for shopping list items
@@ -30,6 +31,20 @@ interface ShoppingListItem {
   ingredient: string;
   recipeId: string;
   recipeName: string;
+}
+
+// Type for meal plan
+interface Meal {
+  id: string;
+  name: string;
+  type: "breakfast" | "lunch" | "dinner";
+  recipeId: string | null;
+}
+
+interface MealPlan {
+  date: Date;
+  meals: Meal[];
+  servingSize?: number;
 }
 
 // Helper function to generate a slug from a string
@@ -51,8 +66,10 @@ const findRecipeBySlug = (slug: string) => {
 const Recipe = () => {
   const { slug } = useParams<{ slug: string }>();
   const recipe = findRecipeBySlug(slug ?? '');
+  
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
+  const [showMealTypeDialog, setShowMealTypeDialog] = useState(false);
 
   // Get shopping list from localStorage or initialize empty array
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
@@ -70,6 +87,9 @@ const Recipe = () => {
 
   // Add a state variable for print mode
   const [isPrinting, setIsPrinting] = useState(false);
+
+  // Add a variable for recipe tips
+  let tips: string[] = [];
 
   // Default recipe data
   let ingredients = [
@@ -102,12 +122,16 @@ const Recipe = () => {
     // Use ingredients and instructions directly from the recipe object if they exist
     ingredients = recipe.ingredients;
     instructions = recipe.instructions;
-  } else if (slug === "0") {
+  } else if (slug === "0" || slug === "sushi-bake") {
     ingredients = sushiBakeIngredients;
     instructions = sushiBakeInstructions;
-  } else if (slug === "13") {
+  } else if (slug === "13" || slug === "roasted-leg-of-lamb") {
     ingredients = roastedLambIngredients;
     instructions = roastedLambInstructions;
+  } else if (slug === "easy-pad-thai" || slug === "1" || slug === "pad-thai") {
+    ingredients = padThaiIngredients;
+    instructions = padThaiInstructions;
+    tips = padThaiTips;
   }
 
   // Check if an ingredient is already in the shopping list
@@ -187,11 +211,91 @@ const Recipe = () => {
     });
   };
 
-  const handleAddToMealPlan = () => {
+  const handleAddToMealPlan = (mealType: "breakfast" | "lunch" | "dinner") => {
+    if (!recipe) return;
+    
+    // Load existing meal plans from localStorage
+    let mealPlans: MealPlan[] = [];
+    try {
+      const storedMealPlans = localStorage.getItem('mealPlans');
+      if (storedMealPlans) {
+        // Parse the stored meal plans and convert date strings back to Date objects
+        const parsedMealPlans = JSON.parse(storedMealPlans);
+        mealPlans = parsedMealPlans.map((plan: any) => ({
+          ...plan,
+          date: new Date(plan.date)
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading meal plans from localStorage:', error);
+    }
+    
+    // Get today's date (reset time to start of day)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Find if we already have a meal plan for today
+    const todayPlanIndex = mealPlans.findIndex(
+      plan => new Date(plan.date).toDateString() === today.toDateString()
+    );
+    
+    // Generate a unique ID for the new meal
+    const mealId = `${today.toISOString()}-${mealType}-${recipe.id}-${Date.now()}`;
+    
+    if (todayPlanIndex >= 0) {
+      // Check if this recipe already exists for this meal type today
+      const recipeAlreadyExists = mealPlans[todayPlanIndex].meals.some(
+        meal => meal.type === mealType && meal.recipeId === recipe.id
+      );
+      
+      // If recipe already exists for this meal type, don't add it again
+      if (recipeAlreadyExists) {
+        toast({
+          title: "Recipe already added",
+          description: `${recipe.title} is already added to ${mealType} for today`,
+        });
+        return;
+      }
+      
+      // Add new meal to existing date
+      mealPlans[todayPlanIndex].meals.push({
+        id: mealId,
+        name: recipe.title,
+        type: mealType,
+        recipeId: recipe.id
+      });
+    } else {
+      // Create new meal plan for today
+      mealPlans.push({
+        date: today,
+        servingSize: 4, // Default serving size
+        meals: [{
+          id: mealId,
+          name: recipe.title,
+          type: mealType,
+          recipeId: recipe.id
+        }]
+      });
+    }
+    
+    // Save updated meal plans to localStorage
+    try {
+      localStorage.setItem('mealPlans', JSON.stringify(mealPlans));
+      
     toast({
       title: "Added to meal plan",
-      description: `${recipe?.title} has been added to your meal plan.`,
-    });
+        description: `${recipe.title} has been added to today's ${mealType}.`,
+      });
+      
+      setShowMealTypeDialog(false);
+    } catch (error) {
+      console.error('Error saving meal plans to localStorage:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add recipe to meal plan.",
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleIngredient = (ingredient: string) => {
@@ -213,9 +317,9 @@ const Recipe = () => {
     }, 100);
   };
 
-  // Update the link generation function to use slugs
+  // Add a function to generate the link preview
   const generateLinkPreview = () => {
-    const url = window.location.origin + "/recipe/" + generateSlug(recipe?.title || '');
+    const url = window.location.href;
     setLinkPreview(url);
     return url;
   };
@@ -224,14 +328,17 @@ const Recipe = () => {
     // Implement the share functionality
   };
 
-  const navigate = useNavigate();
-
   if (!recipe) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[50vh]">
-          <h1 className="text-2xl font-bold mb-4">Recipe not found</h1>
-          <Button onClick={() => navigate('/recipes')}>Back to Recipes</Button>
+        <div className="flex flex-col items-center justify-center py-10">
+          <p className="text-muted-foreground text-center">Recipe not found.</p>
+          <Link to="/recipes">
+            <Button variant="outline" className="mt-4">
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back to Recipes
+            </Button>
+          </Link>
         </div>
       </Layout>
     );
@@ -456,16 +563,149 @@ const Recipe = () => {
               </div>
               
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <ShoppingCart className="h-4 w-4" />
-                  <span className="hidden sm:inline">Add to Shopping List</span>
-                </Button>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <CalendarPlus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Add to Meal Plan</span>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center gap-1">
+                      <ShoppingCart className="h-4 w-4" />
+                      <span className="hidden sm:inline">Add to Shopping List</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md max-w-[95vw]">
+                    <DialogHeader>
+                      <DialogTitle>Add Ingredients to Shopping List</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Select ingredients from {recipe?.title} to add to your shopping list:
+                      </p>
+                      <div className="flex justify-end mb-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={handleSelectAllIngredients}
+                        >
+                          <CheckSquare className="h-4 w-4" />
+                          Select All
             </Button>
           </div>
+                      <div className="max-h-[50vh] overflow-y-auto pr-2">
+                        <ul className="space-y-2">
+                          {ingredients.map((ingredient, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <Checkbox 
+                                id={`ingredient-${index}`}
+                                checked={ingredientsToAdd.includes(ingredient)}
+                                onCheckedChange={() => toggleIngredient(ingredient)}
+                                disabled={isIngredientInShoppingList(ingredient)}
+                              />
+                              <div className="grid gap-1.5 leading-none">
+                                <label
+                                  htmlFor={`ingredient-${index}`}
+                                  className={cn(
+                                    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                                    isIngredientInShoppingList(ingredient) && "line-through text-muted-foreground"
+                                  )}
+                                >
+                                  {ingredient}
+                                </label>
+                                {isIngredientInShoppingList(ingredient) && (
+                                  <p className="text-xs text-muted-foreground">
+                                    Already in shopping list
+                                  </p>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <DialogFooter className="sm:justify-between">
+                      <div className="hidden sm:block">
+                        {ingredientsToAdd.length > 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            {ingredientsToAdd.length} ingredient{ingredientsToAdd.length !== 1 ? 's' : ''} selected
+                          </p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No ingredients selected
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 sm:flex-initial"
+                          onClick={() => setIngredientsToAdd([])}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          className="flex-1 sm:flex-initial flex items-center gap-1"
+                          onClick={handleAddToShoppingList}
+                          disabled={ingredientsToAdd.length === 0}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                          Add to Shopping List
+                        </Button>
         </div>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                
+                <Dialog open={showMealTypeDialog} onOpenChange={setShowMealTypeDialog}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-1"
+                    >
+                      <CalendarPlus className="h-4 w-4" />
+                      <span className="hidden sm:inline">Add to Meal Plan</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md max-w-[95vw]">
+                    <DialogHeader>
+                      <DialogTitle>Add to Today's Meal Plan</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Choose which meal to add <span className="font-medium">{recipe?.title}</span> to:
+                      </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <Button 
+                          onClick={() => handleAddToMealPlan("breakfast")}
+                          className="flex flex-col items-center py-6 h-auto border-2 hover:border-primary hover:bg-primary/5"
+                          variant="outline"
+                        >
+                          <span className="text-2xl mb-2">🍳</span>
+                          <span className="font-medium">Breakfast</span>
+                        </Button>
+                        <Button 
+                          onClick={() => handleAddToMealPlan("lunch")}
+                          className="flex flex-col items-center py-6 h-auto border-2 hover:border-primary hover:bg-primary/5"
+                          variant="outline"
+                        >
+                          <span className="text-2xl mb-2">🥪</span>
+                          <span className="font-medium">Lunch</span>
+                        </Button>
+                        <Button 
+                          onClick={() => handleAddToMealPlan("dinner")}
+                          className="flex flex-col items-center py-6 h-auto border-2 hover:border-primary hover:bg-primary/5"
+                          variant="outline"
+                        >
+                          <span className="text-2xl mb-2">🍲</span>
+                          <span className="font-medium">Dinner</span>
+                        </Button>
+                      </div>
+                      <div className="mt-4 text-xs text-muted-foreground text-center">
+                        This will add the recipe to today's meal plan
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
         </div>
         
           <Tabs defaultValue="ingredients" className="w-full mb-8" onValueChange={setActiveTab}>

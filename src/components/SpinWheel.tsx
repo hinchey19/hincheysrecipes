@@ -178,7 +178,16 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
   
   const viewRecipe = () => {
     if (selectedRecipe) {
-      navigate(`/recipe/${selectedRecipe.id}`);
+      // Generate a slug from the recipe title
+      const slug = selectedRecipe.title
+        .toLowerCase()
+        .replace(/\s+/g, '-')     // Replace spaces with -
+        .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+        .replace(/\-\-+/g, '-')   // Replace multiple - with single -
+        .replace(/^-+/, '')       // Trim - from start of text
+        .replace(/-+$/, '');      // Trim - from end of text
+      
+      navigate(`/recipe/${slug}`);
       onOpenChange(false);
     }
   };

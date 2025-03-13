@@ -113,7 +113,7 @@ export const MealPlannerCalendar = ({
       <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="border rounded-md overflow-hidden min-w-[300px] w-full" style={{ maxWidth: "calc(100vw - 32px)" }}>
           {/* Header row */}
-          <div className="grid grid-cols-4 border-b bg-muted text-[9px] sm:text-xs" style={{ gridTemplateColumns: "80px 1fr 1fr 1fr" }}>
+          <div className="grid grid-cols-4 border-b bg-muted text-[11px] sm:text-sm" style={{ gridTemplateColumns: "120px 1fr 1fr 1fr" }}>
             <div className="py-1 px-1 font-semibold text-center border-r">Day</div>
             <div className="py-1 px-1 font-semibold text-center border-r">Breakfast</div>
             <div className="py-1 px-1 font-semibold text-center border-r">Lunch</div>
@@ -122,7 +122,7 @@ export const MealPlannerCalendar = ({
 
           {/* Day rows */}
           {days.map(({ date, day, dayOfMonth }) => (
-            <div key={date.toISOString()} className="grid grid-cols-4 border-b last:border-b-0" style={{ gridTemplateColumns: "80px 1fr 1fr 1fr" }}>
+            <div key={date.toISOString()} className="grid grid-cols-4 border-b last:border-b-0" style={{ gridTemplateColumns: "120px 1fr 1fr 1fr" }}>
               {/* Day column */}
               <div className="py-1 px-1 border-r flex flex-col justify-start">
                 <div className="font-medium text-[12px] sm:text-sm">{day}</div>

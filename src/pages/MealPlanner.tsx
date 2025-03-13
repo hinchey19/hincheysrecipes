@@ -13,7 +13,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { ShoppingCart, Calculator, CheckSquare, AlertCircle } from "lucide-react";
+import { ShoppingCart, Calculator, CheckSquare, AlertCircle, Trash2 } from "lucide-react";
 import { 
   Dialog, 
   DialogContent, 
@@ -204,6 +204,26 @@ const MealPlanner = () => {
     });
   };
 
+  // Add a function to clear all meals from the planner
+  const clearAllMeals = () => {
+    if (mealPlans.length === 0) {
+      toast({
+        title: "No meals to clear",
+        description: "Your meal planner is already empty.",
+      });
+      return;
+    }
+
+    setMealPlans([]);
+    setSelectedMeals([]);
+    saveMealPlansToStorage([]);
+    
+    toast({
+      title: "All meals cleared",
+      description: "All meals have been removed from your meal planner.",
+    });
+  };
+
   const updateServingSize = (date: Date, servingSize: number) => {
     setMealPlans(prevPlans => {
       const newPlans = [...prevPlans];
@@ -234,16 +254,43 @@ const MealPlanner = () => {
     // This is a simplified calculation - in a real app, you would parse ingredients more precisely
     const ingredients: {name: string, quantity: string, category: string}[] = [];
     
-    // If no meals are selected, use all meals from the meal plans
+    // Get today's date at the start of the day for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // If no meals are selected, use all meals from the meal plans (only from today and future)
     const mealsToCalculate = selectedMeals.length > 0 ? selectedMeals : 
-      mealPlans.flatMap(plan => 
-        plan.meals.map(meal => ({
-          id: meal.id,
-          name: meal.name,
-          recipeId: meal.recipeId || "",
-          date: plan.date
-        }))
-      ).filter(meal => meal.recipeId);
+      mealPlans
+        .filter(plan => {
+          // Convert plan date to start of day for accurate comparison
+          const planDate = new Date(plan.date);
+          planDate.setHours(0, 0, 0, 0);
+          return planDate >= today; // Only include today and future dates
+        })
+        .flatMap(plan => 
+          plan.meals.map(meal => ({
+            id: meal.id,
+            name: meal.name,
+            recipeId: meal.recipeId || "",
+            date: plan.date
+          }))
+        ).filter(meal => meal.recipeId);
+    
+    // If selected meals are provided, filter them to only include today and future
+    if (selectedMeals.length > 0) {
+      const filteredSelectedMeals = selectedMeals.filter(meal => {
+        const mealDate = new Date(meal.date);
+        mealDate.setHours(0, 0, 0, 0);
+        return mealDate >= today;
+      });
+      
+      if (filteredSelectedMeals.length < selectedMeals.length) {
+        toast({
+          title: "Some meals excluded",
+          description: "Only meals from today and future dates are included in the calculation.",
+        });
+      }
+    }
     
     mealsToCalculate.forEach(meal => {
       const recipe = mockRecipes.find(r => r.id === meal.recipeId);
@@ -429,11 +476,11 @@ const MealPlanner = () => {
   return (
     <Layout>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <h1 className="text-2xl font-bold">Meal Planner</h1>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="defaultServings" className="text-sm whitespace-nowrap">Default Servings:</Label>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <Label htmlFor="defaultServings" className="text-xs sm:text-sm whitespace-nowrap">Default Servings:</Label>
               <Input
                 id="defaultServings"
                 type="number"
@@ -441,7 +488,7 @@ const MealPlanner = () => {
                 max="20"
                 value={defaultServingSize}
                 onChange={(e) => setDefaultServingSize(parseInt(e.target.value) || 4)}
-                className="w-16 h-8"
+                className="w-12 h-8"
               />
             </div>
             <Button 
@@ -449,9 +496,20 @@ const MealPlanner = () => {
               size="sm"
               onClick={calculateIngredients}
               disabled={mealPlans.length === 0}
+              className="text-xs h-8 px-2 whitespace-nowrap"
             >
-              <Calculator className="h-4 w-4 mr-2" />
+              <Calculator className="h-3.5 w-3.5 mr-1" />
               Calculate Ingredients
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={clearAllMeals}
+              disabled={mealPlans.length === 0}
+              className="text-xs h-8 px-2 whitespace-nowrap text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              Clear All
             </Button>
           </div>
         </div>
@@ -498,10 +556,10 @@ const MealPlanner = () => {
         
         {/* Ingredient Calculation Dialog */}
         <Dialog open={showCalculateDialog} onOpenChange={setShowCalculateDialog}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Calculated Ingredients</DialogTitle>
-              <DialogDescription>
+          <DialogContent className="max-w-md w-[95vw] p-4 sm:p-6">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-lg">Calculated Ingredients</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
                 Based on your selected meals and serving sizes
               </DialogDescription>
             </DialogHeader>
@@ -511,14 +569,14 @@ const MealPlanner = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={handleSelectAllIngredients}
-                className="text-xs"
+                className="text-xs h-7 px-2"
               >
-                <CheckSquare className="h-3.5 w-3.5 mr-1" />
+                <CheckSquare className="h-3 w-3 mr-1" />
                 Select All
               </Button>
             </div>
             
-            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto pr-2">
               {calculatedIngredients.length === 0 ? (
                 <p className="text-center text-muted-foreground">No ingredients to calculate</p>
               ) : (
@@ -533,26 +591,27 @@ const MealPlanner = () => {
                         checked={ingredientsToAdd.includes(ingredientKey)}
                         onCheckedChange={() => toggleIngredient(ingredientKey)}
                         disabled={alreadyInList}
+                        className="mt-0.5"
                       />
                       <div className="flex-1">
                         <label 
                           htmlFor={`ingredient-${index}`}
                           className={cn(
-                            "text-sm font-medium cursor-pointer flex items-center"
+                            "text-xs sm:text-sm font-medium cursor-pointer flex items-center flex-wrap"
                           )}
                         >
                           {ingredient.name}
                           {alreadyInList && (
-                            <span className="ml-2 inline-flex items-center text-xs text-amber-500">
-                              <AlertCircle className="h-3 w-3 mr-1" />
+                            <span className="ml-1 inline-flex items-center text-[10px] sm:text-xs text-amber-500">
+                              <AlertCircle className="h-2.5 w-2.5 mr-0.5" />
                               Already in list
                             </span>
                           )}
                         </label>
-                        <div className="flex items-center mt-0.5 gap-2">
-                          <span className="text-xs text-muted-foreground">{ingredient.quantity}</span>
+                        <div className="flex items-center mt-0.5 gap-1">
+                          <span className="text-[10px] sm:text-xs text-muted-foreground">{ingredient.quantity}</span>
                           <span className="w-1 h-1 rounded-full bg-muted-foreground/50"></span>
-                          <span className="text-xs text-muted-foreground">{ingredient.category}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground">{ingredient.category}</span>
                         </div>
                       </div>
                     </div>
@@ -561,22 +620,22 @@ const MealPlanner = () => {
               )}
             </div>
             
-            <div className="flex flex-col gap-2 pt-4">
-              <div className="flex gap-2">
+            <div className="flex flex-col gap-2 pt-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Button 
                   onClick={addToShoppingList}
-                  className="flex-1"
+                  className="text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4"
                   disabled={ingredientsToAdd.length === 0}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Shopping List
+                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="whitespace-nowrap">Add to Shopping List</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4"
                   onClick={() => window.open("https://www.instacart.com", "_blank")}
                 >
-                  Order on Instacart
+                  <span className="whitespace-nowrap">Order on Instacart</span>
                 </Button>
               </div>
               <Button 
@@ -586,7 +645,7 @@ const MealPlanner = () => {
                   setSelectedMeals([]);
                   setIngredientsToAdd([]);
                 }}
-                className="w-full"
+                className="w-full text-xs sm:text-sm h-8 sm:h-10"
               >
                 Cancel
               </Button>
