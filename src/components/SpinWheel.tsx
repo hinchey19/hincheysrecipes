@@ -6,6 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { RecipeProps } from "@/components/RecipeCard";
 import { cn } from "@/lib/utils";
 
+// Declare global window property for TypeScript
+declare global {
+  interface Window {
+    selectedRecipe: RecipeProps | null;
+  }
+}
+
 interface SpinWheelProps {
   recipes: RecipeProps[];
   isOpen: boolean;
@@ -25,6 +32,26 @@ const SEGMENT_COLORS = [
 
 // Categories to exclude from the spin wheel
 const EXCLUDED_CATEGORIES = ["Dessert", "Beverage", "Appetizer", "dessert", "beverage", "appetizer"];
+
+// Store the selected recipe in localStorage to persist between sessions
+const saveSelectedRecipe = (recipe: RecipeProps | null) => {
+  if (recipe) {
+    localStorage.setItem('selectedRecipe', JSON.stringify(recipe));
+  }
+};
+
+// Get the selected recipe from localStorage
+const getSelectedRecipe = (): RecipeProps | null => {
+  const savedRecipe = localStorage.getItem('selectedRecipe');
+  if (savedRecipe) {
+    try {
+      return JSON.parse(savedRecipe);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+};
 
 // Simple confetti component
 const Confetti = () => {
@@ -83,6 +110,7 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeProps | null>(null);
   const [rotation, setRotation] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [arrowRotation, setArrowRotation] = useState(0);
   const wheelRef = useRef<HTMLDivElement>(null);
   
   // Filter recipes to include only those with valid IDs and titles
@@ -96,6 +124,19 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
   
   // Calculate the angle for each recipe segment
   const segmentAngle = 360 / validRecipes.length;
+  
+  // When the component mounts or isOpen changes, update the rotation to match the selected recipe
+  useEffect(() => {
+    if (isOpen && selectedRecipe && !spinning) {
+      // Find the index of the selected recipe
+      const selectedIndex = validRecipes.findIndex(recipe => recipe.id === selectedRecipe.id);
+      if (selectedIndex !== -1) {
+        // Calculate the rotation needed to show this recipe at the top
+        const selectedSegmentMiddle = (validRecipes.length - 1 - selectedIndex) * segmentAngle + (segmentAngle / 2);
+        setArrowRotation(selectedSegmentMiddle);
+      }
+    }
+  }, [isOpen, selectedRecipe, validRecipes, segmentAngle, spinning]);
   
   const spinWheel = () => {
     if (spinning || validRecipes.length === 0) return;
@@ -117,9 +158,19 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
     // Calculate which recipe is selected based on the final position
     setTimeout(() => {
       const normalizedAngle = newRotation % 360;
-      const selectedIndex = Math.floor(normalizedAngle / segmentAngle);
-      const selectedRecipe = validRecipes[validRecipes.length - 1 - selectedIndex];
+      // Adjust the index calculation to match the visual order
+      const selectedIndex = validRecipes.length - 1 - Math.floor(normalizedAngle / segmentAngle);
+      const selectedRecipe = validRecipes[selectedIndex];
       setSelectedRecipe(selectedRecipe);
+      
+      // Save the selected recipe to localStorage
+      saveSelectedRecipe(selectedRecipe);
+      
+      // Calculate the arrow rotation to point to the selected recipe
+      // The arrow should point to the opposite of where the segment is
+      const selectedSegmentMiddle = normalizedAngle + (segmentAngle / 2);
+      setArrowRotation(selectedSegmentMiddle);
+      
       setSpinning(false);
       setShowConfetti(true);
     }, 3000); // Match this with the CSS transition duration
@@ -144,21 +195,34 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
     onMinimize();
   };
   
+  // Export the selected recipe for other components to use
+  useEffect(() => {
+    // Make the selected recipe available globally
+    window.selectedRecipe = selectedRecipe;
+  }, [selectedRecipe]);
+  
   return (
     <>
       {showConfetti && <Confetti />}
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent 
-          className="sm:max-w-xl max-h-[90vh] overflow-y-auto fixed-dialog" 
-          style={{ background: '#FFF9C4' }} 
+          className="sm:max-w-xl max-h-[90vh] overflow-visible" 
+          style={{ 
+            background: '#FFF9C4',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 100,
+            width: '36rem',
+            maxWidth: '90vw'
+          }} 
           hideCloseButton={true}
           onClick={handleDialogClick}
           onPointerDownOutside={(e) => {
-            // Prevent closing when clicking outside
             e.preventDefault();
           }}
           onInteractOutside={(e) => {
-            // Prevent closing when interacting outside
             e.preventDefault();
           }}
         >
@@ -177,8 +241,17 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
           <div className="flex flex-col items-center py-4">
             <div className="relative w-[400px] h-[400px] mb-8" onClick={(e) => e.stopPropagation()}>
               {/* Spinner arrow */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-8 z-10">
-                <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[20px] border-transparent border-t-pink-500"></div>
+              <div 
+                className="absolute top-0 left-1/2 -translate-x-1/2 -mt-6 z-10 transition-transform duration-300"
+                style={{ transform: `translate(-50%, 0) rotate(${arrowRotation}deg)` }}
+              >
+                <div className="w-6 h-8 relative">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0 
+                    border-l-[12px] border-r-[12px] border-t-[16px] 
+                    border-transparent border-t-pink-500">
+                  </div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-pink-500"></div>
+                </div>
               </div>
               
               {/* Center circle - now clickable */}
@@ -196,11 +269,11 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
               {/* Wheel */}
               <div 
                 ref={wheelRef}
-                className={cn(
-                  "w-full h-full rounded-full overflow-hidden border-8 border-white relative spin-wheel",
-                  spinning && "wheel-spinning"
-                )}
-                style={{ transform: `rotate(${rotation}deg)` }}
+                className="w-full h-full rounded-full overflow-hidden border-8 border-white relative spin-wheel"
+                style={{ 
+                  transform: `rotate(${rotation}deg)`,
+                  transition: 'transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67)'
+                }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {validRecipes.map((recipe, index) => {

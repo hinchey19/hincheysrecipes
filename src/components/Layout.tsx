@@ -32,36 +32,20 @@ export const Layout = ({ children }: LayoutProps) => {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [spinWheelOpen, setSpinWheelOpen] = useState(false);
-  const [spinWheelMinimized, setSpinWheelMinimized] = useState(false);
+  const [spinWheelMinimized, setSpinWheelMinimized] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     
-    // Check if this is the first visit to the site
-    const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
-    // Check if we have a saved state for the spin wheel
-    const savedSpinWheelState = localStorage.getItem('spinWheelState');
+    // Check if we've already shown the spin wheel in this session
+    const hasShownSpinWheelThisSession = sessionStorage.getItem('hasShownSpinWheelThisSession');
     
-    if (!hasVisitedBefore) {
-      // First visit ever - show the spin wheel
+    if (!hasShownSpinWheelThisSession) {
+      // First time in this session - show the spin wheel
       setSpinWheelOpen(true);
       setSpinWheelMinimized(false);
-      localStorage.setItem('hasVisitedBefore', 'true');
-      localStorage.setItem('spinWheelState', 'open');
-    } else if (savedSpinWheelState) {
-      // We have a saved state - use it
-      if (savedSpinWheelState === 'open') {
-        setSpinWheelOpen(true);
-        setSpinWheelMinimized(false);
-      } else {
-        setSpinWheelOpen(false);
-        setSpinWheelMinimized(true);
-      }
-    } else {
-      // Returning visitor with no saved state - show the minimized tab
-      setSpinWheelOpen(false);
-      setSpinWheelMinimized(true);
-      localStorage.setItem('spinWheelState', 'minimized');
+      // Mark that we've shown the spin wheel in this session
+      sessionStorage.setItem('hasShownSpinWheelThisSession', 'true');
     }
   }, []);
 
@@ -75,23 +59,18 @@ export const Layout = ({ children }: LayoutProps) => {
   const handleOpenSpinWheel = () => {
     setSpinWheelOpen(true);
     setSpinWheelMinimized(false);
-    localStorage.setItem('spinWheelState', 'open');
   };
 
   const handleMinimizeSpinWheel = () => {
     setSpinWheelOpen(false);
     setSpinWheelMinimized(true);
-    localStorage.setItem('spinWheelState', 'minimized');
   };
   
-  // This function handles the state change for the spin wheel dialog
   const handleSpinWheelOpenChange = (open: boolean) => {
-    // If the dialog is being closed, minimize it instead of fully closing
     if (!open) {
       handleMinimizeSpinWheel();
     } else {
       setSpinWheelOpen(true);
-      localStorage.setItem('spinWheelState', 'open');
     }
   };
 
