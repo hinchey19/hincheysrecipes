@@ -1,0 +1,155 @@
+/* Spin Wheel Styles */
+.spin-wheel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spin-wheel {
+  transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,192,203,0.05) 100%);
+}
+
+.spin-wheel-tab {
+  transition: all 0.3s ease;
+}
+
+.spin-wheel-tab:hover {
+  transform: translateY(-50%) translateX(-5px);
+}
+
+/* Writing vertical text */
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+
+/* Animation for the wheel when spinning */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes spin-glow {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(255, 82, 82, 0.7));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(255, 82, 82, 0.9));
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(255, 82, 82, 0.7));
+  }
+}
+
+.wheel-spinning {
+  animation: spin-glow 2s infinite;
+}
+
+/* Fixed dialog to prevent movement during animations */
+.fixed-dialog {
+  transform: none !important;
+  animation: none !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+}
+
+/* GO! button animation */
+@keyframes go-button-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+  }
+}
+
+.go-button-pulse {
+  animation: go-button-pulse 1.5s infinite;
+  transform-origin: center;
+}
+
+.go-button-pulse:disabled {
+  animation: none;
+  opacity: 0.7;
+}
+
+/* Recipe image styling */
+.recipe-image-container {
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.recipe-image-container img {
+  transition: transform 0.3s ease;
+}
+
+/* Improve text visibility on wheel segments */
+.recipe-name-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+  width: max-content;
+  max-width: 150px;
+  pointer-events: none;
+}
+
+/* Dialog styling enhancements */
+.sm\:max-w-xl {
+  max-width: 36rem;
+  background-color: #FFF9C4;
+  margin: 0 auto;
+}
+
+/* Spin button animation */
+@keyframes button-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Confetti animation */
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+} 
