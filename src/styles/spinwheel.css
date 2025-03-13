@@ -19,6 +19,13 @@
   transform: translateY(-50%) translateX(-5px);
 }
 
+/* Hide spin wheel tab when printing */
+@media print {
+  .spin-wheel-tab {
+    display: none !important;
+  }
+}
+
 /* Writing vertical text */
 .writing-vertical {
   writing-mode: vertical-rl;
@@ -156,12 +163,5 @@
   100% {
     transform: translateY(100vh) rotate(720deg);
     opacity: 0;
-  }
-}
-
-/* Make sure the spin wheel tab is hidden when printing */
-@media print {
-  .spin-wheel-tab {
-    display: none !important;
   }
 } 

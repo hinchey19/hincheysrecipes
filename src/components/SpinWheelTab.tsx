@@ -12,7 +12,7 @@ export const SpinWheelTab = ({ onClick, className }: SpinWheelTabProps) => {
     <button
       onClick={onClick}
       className={cn(
-        "fixed right-0 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-2 sm:p-3 rounded-l-md shadow-md z-50 transition-all hover:right-1 spin-wheel-tab no-print",
+        "fixed right-0 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-2 sm:p-3 rounded-l-md shadow-md z-50 transition-all hover:right-1 spin-wheel-tab",
         className
       )}
       aria-label="What's for dinner?"

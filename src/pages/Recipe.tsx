@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { 
   Clock, Users, ChevronLeft, Printer, Share, Plus, 
   Check, ShoppingCart, Calendar, Trash2, CheckSquare, AlertCircle,
@@ -19,7 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import { mockRecipes } from "@/data/mockData";
 import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRecipe";
 import { roastedLambIngredients, roastedLambInstructions } from "@/data/roastedLambRecipe";
@@ -32,13 +32,28 @@ interface ShoppingListItem {
   recipeName: string;
 }
 
+// Helper function to generate a slug from a string
+const generateSlug = (text: string): string => {
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
+    .replace(/^-+/, '')       // Trim - from start of text
+    .replace(/-+$/, '');      // Trim - from end of text
+};
+
+// Helper function to find a recipe by slug
+const findRecipeBySlug = (slug: string) => {
+  return mockRecipes.find(recipe => generateSlug(recipe.title) === slug);
+};
+
 const Recipe = () => {
-  const { id } = useParams<{ id: string }>();
-  const recipe = mockRecipes.find(r => r.id === id);
-  
+  const { slug } = useParams<{ slug: string }>();
+  const recipe = findRecipeBySlug(slug ?? '');
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
-  
+
   // Get shopping list from localStorage or initialize empty array
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
     const savedList = localStorage.getItem('shoppingList');
@@ -87,10 +102,10 @@ const Recipe = () => {
     // Use ingredients and instructions directly from the recipe object if they exist
     ingredients = recipe.ingredients;
     instructions = recipe.instructions;
-  } else if (id === "0") {
+  } else if (slug === "0") {
     ingredients = sushiBakeIngredients;
     instructions = sushiBakeInstructions;
-  } else if (id === "13") {
+  } else if (slug === "13") {
     ingredients = roastedLambIngredients;
     instructions = roastedLambInstructions;
   }
@@ -198,9 +213,9 @@ const Recipe = () => {
     }, 100);
   };
 
-  // Add a function to generate the link preview
+  // Update the link generation function to use slugs
   const generateLinkPreview = () => {
-    const url = window.location.href;
+    const url = window.location.origin + "/recipe/" + generateSlug(recipe?.title || '');
     setLinkPreview(url);
     return url;
   };
@@ -209,25 +224,14 @@ const Recipe = () => {
     // Implement the share functionality
   };
 
-  // Function to generate a URL for the recipe that includes the recipe name
-  const generateRecipeUrl = () => {
-    if (!recipe) return '';
-    const baseUrl = window.location.origin;
-    const slug = recipe.title.toLowerCase().replace(/\s+/g, '-');
-    return `${baseUrl}/recipe/${recipe.id}/${slug}`;
-  };
+  const navigate = useNavigate();
 
   if (!recipe) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center py-10">
-          <p className="text-muted-foreground text-center">Recipe not found.</p>
-          <Link to="/recipes">
-            <Button variant="outline" className="mt-4">
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back to Recipes
-            </Button>
-          </Link>
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+          <h1 className="text-2xl font-bold mb-4">Recipe not found</h1>
+          <Button onClick={() => navigate('/recipes')}>Back to Recipes</Button>
         </div>
       </Layout>
     );
@@ -251,27 +255,27 @@ const Recipe = () => {
               <h1 className="text-5xl font-bold text-black">Hinchey's Recipes</h1>
             </div>
             <div className="w-full flex justify-start mb-4">
-              <Link to="/recipes">
-                <Button variant="ghost" className="mb-2">
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Back to Recipes
-                </Button>
-              </Link>
+          <Link to="/recipes">
+            <Button variant="ghost" className="mb-2">
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back to Recipes
+            </Button>
+          </Link>
             </div>
             <div className="w-full flex flex-col items-start">
-              <h1 className="text-3xl font-bold mb-2">{recipe.title}</h1>
-              <p className="text-muted-foreground mb-4">{recipe.description}</p>
-              
+          <h1 className="text-3xl font-bold mb-2">{recipe.title}</h1>
+          <p className="text-muted-foreground mb-4">{recipe.description}</p>
+          
               <div className="w-full flex flex-wrap items-center gap-4 mb-4">
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-sm">{recipe.prepTime} minutes</span>
-                </div>
-                <div className="flex items-center">
-                  <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-sm">{recipe.servings} servings</span>
-                </div>
-                <Badge variant="secondary">{recipe.category}</Badge>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
+              <span className="text-sm">{recipe.prepTime} minutes</span>
+            </div>
+            <div className="flex items-center">
+              <Users className="h-4 w-4 mr-1 text-muted-foreground" />
+              <span className="text-sm">{recipe.servings} servings</span>
+            </div>
+            <Badge variant="secondary">{recipe.category}</Badge>
               </div>
             </div>
           </div>
@@ -297,19 +301,19 @@ const Recipe = () => {
                 >
                   <Printer className="h-4 w-4" />
                   <span className="hidden sm:inline">Print</span>
-                </Button>
+            </Button>
                 
-                <Dialog>
-                  <DialogTrigger asChild>
+            <Dialog>
+              <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="flex items-center gap-1">
                       <Share className="h-4 w-4" />
                       <span className="hidden sm:inline">Share</span>
-                    </Button>
-                  </DialogTrigger>
+                </Button>
+              </DialogTrigger>
                   <DialogContent className="sm:max-w-md max-w-[95vw]">
-                    <DialogHeader>
+                <DialogHeader>
                       <DialogTitle>Share this recipe</DialogTitle>
-                    </DialogHeader>
+                </DialogHeader>
                     <div className="flex flex-col space-y-4 py-4">
                       <div className="space-y-2">
                         <span className="text-sm text-muted-foreground">Copy link</span>
@@ -357,8 +361,8 @@ const Recipe = () => {
                             <Copy className="h-4 w-4" />
                             Copy
                           </Button>
-                        </div>
-                      </div>
+                    </div>
+                </div>
                       
                       <Separator />
                       
@@ -414,7 +418,7 @@ const Recipe = () => {
                             }}
                           >
                             <Mail className="h-4 w-4" />
-                          </Button>
+                  </Button>
                           <Button 
                             variant="outline" 
                             size="icon" 
@@ -443,12 +447,12 @@ const Recipe = () => {
                             }}
                           >
                             <Share className="h-4 w-4" />
-                          </Button>
+                  </Button>
                         </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                </div>
+              </DialogContent>
+            </Dialog>
               </div>
               
               <div className="flex flex-wrap gap-2">
@@ -459,17 +463,17 @@ const Recipe = () => {
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                   <CalendarPlus className="h-4 w-4" />
                   <span className="hidden sm:inline">Add to Meal Plan</span>
-                </Button>
-              </div>
-            </div>
+            </Button>
           </div>
-          
+        </div>
+        </div>
+        
           <Tabs defaultValue="ingredients" className="w-full mb-8" onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
-              <TabsTrigger value="instructions">Instructions</TabsTrigger>
-            </TabsList>
-            <TabsContent value="ingredients" className="mt-4 space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
+            <TabsTrigger value="instructions">Instructions</TabsTrigger>
+          </TabsList>
+          <TabsContent value="ingredients" className="mt-4 space-y-4">
               <div className="bg-card rounded-lg p-4 sm:p-6 border border-border">
                 <ul className="space-y-3">
                   {ingredients.map((ingredient, index) => (
@@ -553,7 +557,6 @@ const Recipe = () => {
           
           <div className="print-footer">
             <p>Recipe from Hinchey's Recipes</p>
-            <p className="print-url">{generateRecipeUrl()}</p>
           </div>
         </div>
       </div>
@@ -723,12 +726,6 @@ const Recipe = () => {
               text-align: center;
               font-size: 8pt;
               color: #666;
-            }
-            
-            .print-url {
-              font-size: 7pt;
-              color: #888;
-              margin-top: 4pt;
             }
             
             @page {

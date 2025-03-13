@@ -8,6 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { mockRecipes } from "@/data/mockData";
 
+// Helper function to generate a slug from a string
+const generateSlug = (text: string): string => {
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
+    .replace(/^-+/, '')       // Trim - from start of text
+    .replace(/-+$/, '');      // Trim - from end of text
+};
+
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -21,6 +32,7 @@ const Index = () => {
 
   // Get featured recipe (Roasted Leg of Lamb)
   const featuredRecipe = mockRecipes.find(recipe => recipe.id === "13") || mockRecipes[0];
+  const featuredRecipeSlug = featuredRecipe ? generateSlug(featuredRecipe.title) : "";
   
   // Get latest 4 recipes sorted by dateAdded (newest first)
   const latestRecipes = [...mockRecipes]
@@ -79,7 +91,7 @@ const Index = () => {
                         <span className="text-sm">{featuredRecipe.servings} servings</span>
                       </div>
                     </div>
-                    <Link to={`/recipe/${featuredRecipe.id}`}>
+                    <Link to={`/recipe/${featuredRecipeSlug}`}>
                       <Button variant="default">
                         View Recipe
                       </Button>
