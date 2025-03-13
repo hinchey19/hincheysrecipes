@@ -215,7 +215,8 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
             transform: 'translate(-50%, -50%)',
             zIndex: 100,
             width: '36rem',
-            maxWidth: '90vw'
+            maxWidth: '95vw',
+            padding: 'clamp(16px, 4vw, 24px)'
           }} 
           hideCloseButton={true}
           onClick={handleDialogClick}
@@ -227,7 +228,7 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
           }}
         >
           <DialogHeader>
-            <DialogTitle className="text-center text-4xl font-bold text-pink-500 mb-4">What's for Dinner?</DialogTitle>
+            <DialogTitle className="text-center text-2xl sm:text-4xl font-bold text-pink-500 mb-2 sm:mb-4">What's for Dinner?</DialogTitle>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -238,8 +239,15 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
             </Button>
           </DialogHeader>
           
-          <div className="flex flex-col items-center py-4">
-            <div className="relative w-[400px] h-[400px] mb-8" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-col items-center py-2 sm:py-4">
+            <div 
+              className="relative mb-4 sm:mb-8" 
+              style={{
+                width: 'min(300px, 85vw)',
+                height: 'min(300px, 85vw)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Spinner arrow */}
               <div 
                 className="absolute top-0 left-1/2 -translate-x-1/2 -mt-6 z-10 transition-transform duration-300"
@@ -256,14 +264,18 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
               
               {/* Center circle - now clickable */}
               <button 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white border-4 border-pink-500 z-10 flex items-center justify-center shadow-lg go-button-pulse cursor-pointer hover:scale-105 transition-transform"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white border-4 border-pink-500 z-10 flex items-center justify-center shadow-lg go-button-pulse cursor-pointer hover:scale-105 transition-transform"
+                style={{
+                  width: 'min(80px, 25vw)',
+                  height: 'min(80px, 25vw)'
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   spinWheel();
                 }}
                 disabled={spinning || validRecipes.length === 0}
               >
-                <div className="text-2xl font-bold text-pink-500">{spinning ? "..." : "GO!"}</div>
+                <div className="text-xl sm:text-2xl font-bold text-pink-500">{spinning ? "..." : "GO!"}</div>
               </button>
               
               {/* Wheel */}
@@ -285,7 +297,7 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
                   const midAngle = startAngle + (segmentAngle/2);
                   
                   // Calculate position for the image - moved further from center
-                  const imageRadius = 170; // Increased distance from center
+                  const imageRadius = 127.5; // Adjust based on wheel size (85% of wheel radius)
                   const imageX = imageRadius * Math.cos(midAngle * Math.PI / 180);
                   const imageY = imageRadius * Math.sin(midAngle * Math.PI / 180);
                   
@@ -318,8 +330,8 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
                         <div 
                           className="recipe-image-container"
                           style={{
-                            width: '60px',
-                            height: '60px',
+                            width: 'min(45px, 12vw)',
+                            height: 'min(45px, 12vw)',
                             borderRadius: '50%',
                             overflow: 'hidden',
                             border: '2px solid white',
@@ -341,9 +353,9 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
             
             <div className="space-y-4 w-full" onClick={(e) => e.stopPropagation()}>
               {selectedRecipe && (
-                <div className="p-6 border-2 rounded-lg bg-white border-pink-200 shadow-md">
-                  <h3 className="font-medium mb-2 text-gray-700">Tonight's dinner:</h3>
-                  <p className="text-xl font-bold mb-3 text-pink-600">{selectedRecipe.title}</p>
+                <div className="p-4 sm:p-6 border-2 rounded-lg bg-white border-pink-200 shadow-md">
+                  <h3 className="font-medium mb-1 sm:mb-2 text-gray-700">Tonight's dinner:</h3>
+                  <p className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-pink-600">{selectedRecipe.title}</p>
                   <Button 
                     variant="outline" 
                     className="w-full flex items-center justify-center bg-white hover:bg-pink-50 border-pink-300 text-pink-600" 
@@ -352,7 +364,7 @@ export const SpinWheel = ({ recipes, isOpen, onOpenChange, onMinimize }: SpinWhe
                       viewRecipe();
                     }}
                   >
-                    View Recipe <ChevronRight className="ml-2 h-4 w-4" />
+                    View Recipe <ChevronRight className="ml-1 sm:ml-2 h-4 w-4" />
                   </Button>
                 </div>
               )}
