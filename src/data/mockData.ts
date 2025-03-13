@@ -181,5 +181,28 @@ export const mockRecipes: RecipeProps[] = [
       "Uncover and continue to stir-fry over high heat until the sauce thickens to your liking.",
       "Garnish with the reserved scallions and serve immediately with steamed rice."
     ]
+  },
+  {
+    id: "16",
+    title: "Basque Cheesecake (6-inch)",
+    description: "A rustic Spanish-style cheesecake with a caramelized top and creamy, custard-like interior.",
+    image: "https://cravinghomecooked.com/wp-content/uploads/2023/02/basque-cheesecake-1-15.jpg",
+    prepTime: 45,
+    servings: 8,
+    category: "Dessert",
+    dateAdded: "2024-07-15",
+    ingredients: [
+      "225g cream cheese (softened at room temperature)",
+      "160g heavy cream",
+      "80g sugar",
+      "3 whole eggs",
+      "10g cornstarch"
+    ],
+    instructions: [
+      "Prepare the batter: Let the cream cheese soften at room temperature. Beat the cream cheese and sugar together until smooth and creamy. Add eggs one at a time, mixing well after each addition. Gradually pour in the heavy cream while continuing to mix.",
+      "Incorporate cornstarch: Sift in the cornstarch and mix until fully incorporated. The batter should be smooth and free of lumps.",
+      "Bake the cheesecake: Preheat the oven to 400°F (200°C). Line a 6-inch round cake pan with parchment paper. Pour the batter into the pan and tap it gently on the counter to release any air bubbles. Bake for about 30 minutes, or until the top is deep golden brown and slightly jiggly in the center.",
+      "Chill and serve: Let the cheesecake cool to room temperature. Refrigerate overnight for the best texture. Slice and enjoy a silky, custard-like cheesecake!"
+    ]
   }
 ];

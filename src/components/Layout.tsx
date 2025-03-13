@@ -78,12 +78,19 @@ export const Layout = ({ children }: LayoutProps) => {
     <SidebarProvider>
       <div className="flex h-screen">
         <Sidebar className="border-r border-border">
-          <SidebarHeader className="h-16 flex items-center px-6 border-b border-border">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <Book className="h-4 w-4 text-primary-foreground" />
+          <SidebarHeader className="h-auto flex flex-col items-center px-6 py-4 border-b border-border">
+            <Link to="/" className="flex flex-col items-center w-full">
+              <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
+                <img 
+                  src="https://t3.ftcdn.net/jpg/03/47/39/42/360_F_347394209_Wt66TsKLwVEqjJzxT1ub8tWLuNLTySnK.jpg" 
+                  alt="Hinchey's Recipes Logo" 
+                  className="w-full h-full object-cover"
+                  style={{ objectFit: 'cover' }}
+                />
               </div>
-              <span className="font-semibold text-lg">Hinchey's Recipes</span>
+              <div className="text-center mt-2">
+                <h1 className="font-bold text-2xl text-black">Hinchey's Recipes</h1>
+              </div>
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -117,9 +124,19 @@ export const Layout = ({ children }: LayoutProps) => {
                 </Button>
               </SidebarTrigger>
               {mounted && isMobile && (
-                <h1 className="text-lg font-medium ml-2">
-                  {navigation.find(item => item.href === location.pathname)?.name || 'Home'}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    <img 
+                      src="https://t3.ftcdn.net/jpg/03/47/39/42/360_F_347394209_Wt66TsKLwVEqjJzxT1ub8tWLuNLTySnK.jpg" 
+                      alt="Hinchey's Recipes Logo" 
+                      className="w-full h-full object-cover"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <h1 className="text-xl font-bold text-black">
+                    Hinchey's Recipes
+                  </h1>
+                </div>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -129,7 +146,7 @@ export const Layout = ({ children }: LayoutProps) => {
             </div>
           </header>
           <main className="flex-1 overflow-auto">
-            <div className="container py-6 md:py-8 lg:py-10 animate-fade-in">
+            <div className="container py-6 md:py-8 lg:py-10 px-4 md:px-6 lg:px-8 animate-fade-in">
               {children}
             </div>
           </main>

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   Clock, Users, ChevronLeft, Printer, Share, Plus, 
-  Check, ShoppingCart, Calendar, Trash2, CheckSquare, AlertCircle
+  Check, ShoppingCart, Calendar, Trash2, CheckSquare, AlertCircle,
+  Facebook, Twitter, Linkedin, Copy, Instagram, Mail, CalendarPlus
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,12 @@ const Recipe = () => {
   useEffect(() => {
     localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
   }, [shoppingList]);
+
+  // Add a new state variable for the link preview
+  const [linkPreview, setLinkPreview] = useState("");
+
+  // Add a state variable for print mode
+  const [isPrinting, setIsPrinting] = useState(false);
 
   // Default recipe data
   let ingredients = [
@@ -180,6 +187,28 @@ const Recipe = () => {
     );
   };
 
+  // Update the handlePrint function
+  const handlePrint = () => {
+    setIsPrinting(true);
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        setIsPrinting(false);
+      }, 500);
+    }, 100);
+  };
+
+  // Add a function to generate the link preview
+  const generateLinkPreview = () => {
+    const url = window.location.href;
+    setLinkPreview(url);
+    return url;
+  };
+
+  const handleShare = () => {
+    // Implement the share functionality
+  };
+
   if (!recipe) {
     return (
       <Layout>
@@ -198,159 +227,358 @@ const Recipe = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <Link to="/recipes">
-            <Button variant="ghost" className="mb-2">
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back to Recipes
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">{recipe.title}</h1>
-          <p className="text-muted-foreground mb-4">{recipe.description}</p>
-          
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-              <span className="text-sm">{recipe.prepTime} minutes</span>
+      {/* Regular view (hidden during printing) */}
+      <div className={isPrinting ? "hidden" : ""}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full flex flex-col items-center justify-center mb-8">
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src="https://t3.ftcdn.net/jpg/03/47/39/42/360_F_347394209_Wt66TsKLwVEqjJzxT1ub8tWLuNLTySnK.jpg" 
+                alt="Hinchey's Recipes Logo" 
+                className="h-32 w-32 rounded-full"
+                style={{ objectFit: 'cover' }}
+              />
             </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-              <span className="text-sm">{recipe.servings} servings</span>
+            <div className="text-center mb-6">
+              <h1 className="text-5xl font-bold text-black">Hinchey's Recipes</h1>
             </div>
-            <Badge variant="secondary">{recipe.category}</Badge>
+            <div className="w-full flex justify-start mb-4">
+              <Link to="/recipes">
+                <Button variant="ghost" className="mb-2">
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Back to Recipes
+                </Button>
+              </Link>
+            </div>
+            <div className="w-full flex flex-col items-start">
+              <h1 className="text-3xl font-bold mb-2">{recipe.title}</h1>
+              <p className="text-muted-foreground mb-4">{recipe.description}</p>
+              
+              <div className="w-full flex flex-wrap items-center gap-4 mb-4">
+                <div className="flex items-center">
+                  <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
+                  <span className="text-sm">{recipe.prepTime} minutes</span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 mr-1 text-muted-foreground" />
+                  <span className="text-sm">{recipe.servings} servings</span>
+                </div>
+                <Badge variant="secondary">{recipe.category}</Badge>
+              </div>
+            </div>
           </div>
           
-          <div className="flex flex-wrap gap-2 mb-6">
-            <Button variant="outline" size="sm">
-              <Printer className="h-4 w-4 mr-2" />
-              Print
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
+          <div className="mb-8">
+            <div className="bg-cover bg-center h-80 w-full rounded-lg overflow-hidden">
+              <img 
+                src={recipe.image} 
+                alt={recipe.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          
+          <div className="w-full mb-6">
+            <div className="flex justify-between mb-4">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handlePrint}>
+                  <Printer className="h-4 w-4" />
+                  Print
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1" 
+                  onClick={handleShare}
+                >
+                  <Share className="h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <ShoppingCart className="h-4 w-4" />
                   Add to Shopping List
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Ingredients to Shopping List</DialogTitle>
-                </DialogHeader>
-                <div className="flex justify-end mb-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleSelectAllIngredients}
-                    className="text-xs"
-                  >
-                    <CheckSquare className="h-3.5 w-3.5 mr-1" />
-                    Select All New
-                  </Button>
-                </div>
-                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                  {ingredients.map((ingredient, index) => {
-                    const alreadyInList = isIngredientInShoppingList(ingredient);
-                    return (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`ingredient-${index}`}
-                          checked={ingredientsToAdd.includes(ingredient)}
-                          onCheckedChange={() => toggleIngredient(ingredient)}
-                          disabled={alreadyInList}
-                        />
-                        <label 
-                          htmlFor={`ingredient-${index}`}
-                          className={cn(
-                            "text-sm cursor-pointer flex items-center",
-                            alreadyInList && "text-muted-foreground line-through"
-                          )}
-                        >
-                          {ingredient}
-                          {alreadyInList && (
-                            <span className="ml-2 inline-flex items-center text-xs text-amber-500">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              Already in list
-                            </span>
-                          )}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-                <DialogFooter className="flex justify-between items-center mt-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleClearShoppingList}
-                    className="flex items-center gap-1 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Clear All
-                  </Button>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setIngredientsToAdd([])}>
-                      Clear Selection
-                    </Button>
-                    <Button onClick={handleAddToShoppingList}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Selected
-                    </Button>
-                  </div>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Button variant="outline" size="sm" onClick={handleAddToMealPlan}>
-              <Calendar className="h-4 w-4 mr-2" />
-              Add to Meal Plan
-            </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <CalendarPlus className="h-4 w-4" />
+                  Add to Meal Plan
+                </Button>
+              </div>
+            </div>
           </div>
+          
+          <Tabs defaultValue="ingredients" className="w-full mb-8" onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
+              <TabsTrigger value="instructions">Instructions</TabsTrigger>
+            </TabsList>
+            <TabsContent value="ingredients" className="mt-4 space-y-4">
+              <div className="bg-card rounded-lg p-6 border border-border">
+                <ul className="space-y-3">
+                  {ingredients.map((ingredient, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+                      <span className="text-base">{ingredient}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </TabsContent>
+            <TabsContent value="instructions" className="mt-4 space-y-4">
+              <div className="bg-card rounded-lg p-6 border border-border">
+                <ol className="space-y-5">
+                  {instructions.map((instruction, index) => (
+                    <li key={index} className="flex gap-4">
+                      <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                        {index + 1}
+                      </span>
+                      <span className="flex-1 pt-0.5 text-base">{instruction}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
-        
-        <div className="mb-8 rounded-xl overflow-hidden">
-          <img 
-            src={recipe.image} 
-            alt={recipe.title} 
-            className="w-full h-auto object-cover max-h-[400px]" 
-          />
-        </div>
-        
-        <Tabs defaultValue="ingredients" className="mb-8" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
-            <TabsTrigger value="instructions">Instructions</TabsTrigger>
-          </TabsList>
-          <TabsContent value="ingredients" className="mt-4 space-y-4">
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <ul className="space-y-2">
+      </div>
+      
+      {/* Print-only view */}
+      <div className={isPrinting ? "print-only-view" : "hidden"}>
+        <div className="print-container">
+          <div className="print-header">
+            <img 
+              src="https://t3.ftcdn.net/jpg/03/47/39/42/360_F_347394209_Wt66TsKLwVEqjJzxT1ub8tWLuNLTySnK.jpg" 
+              alt="Hinchey's Recipes Logo" 
+              className="print-logo"
+            />
+            <div className="print-site-name">Hinchey's Recipes</div>
+            <h1 className="print-title">{recipe.title}</h1>
+            <p className="print-description">{recipe.description}</p>
+            
+            <div className="print-meta">
+              <div className="print-meta-item">
+                <Clock className="print-icon" />
+                <span>{recipe.prepTime} minutes</span>
+              </div>
+              <div className="print-meta-item">
+                <Users className="print-icon" />
+                <span>{recipe.servings} servings</span>
+              </div>
+              <span className="print-category">{recipe.category}</span>
+            </div>
+          </div>
+          
+          <div className="print-content">
+            <div className="print-section">
+              <h2 className="print-section-title">Ingredients</h2>
+              <ul className="print-list">
                 {ingredients.map((ingredient, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                  <li key={index} className="print-list-item">
+                    <div className="print-bullet" />
                     <span>{ingredient}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </TabsContent>
-          <TabsContent value="instructions" className="mt-4 space-y-4">
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <ol className="space-y-4">
+            
+            <div className="print-section">
+              <h2 className="print-section-title">Instructions</h2>
+              <ol className="print-list">
                 {instructions.map((instruction, index) => (
-                  <li key={index} className="flex gap-4">
-                    <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </span>
-                    <span className="flex-1 pt-0.5">{instruction}</span>
+                  <li key={index} className="print-list-item-numbered">
+                    <span className="print-number">{index + 1}</span>
+                    <span className="print-instruction">{instruction}</span>
                   </li>
                 ))}
               </ol>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+          
+          <div className="print-footer">
+            <p>Recipe from Hinchey's Recipes</p>
+          </div>
+        </div>
       </div>
+      
+      {/* Add print styles */}
+      <style>
+        {`
+          @media print {
+            header, footer, nav, .no-print {
+              display: none !important;
+            }
+            
+            body, html {
+              width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              font-size: 10pt !important;
+            }
+            
+            .print-only-view {
+              display: block !important;
+            }
+            
+            .hidden {
+              display: none !important;
+            }
+            
+            .print-container {
+              max-width: 100%;
+              margin: 0 auto;
+              padding: 0.3in;
+            }
+            
+            .print-header {
+              text-align: center;
+              margin-bottom: 15pt;
+            }
+            
+            .print-logo {
+              width: 80pt;
+              height: 80pt;
+              border-radius: 50%;
+              object-fit: cover;
+              margin: 0 auto 10pt;
+              display: block;
+            }
+            
+            .print-site-name {
+              font-size: 40pt !important;
+              font-weight: bold;
+              margin-bottom: 15pt !important;
+              color: #000;
+            }
+            
+            .print-title {
+              font-size: 18pt !important;
+              font-weight: bold;
+              margin-bottom: 6pt !important;
+            }
+            
+            .print-description {
+              font-size: 10pt !important;
+              margin-bottom: 8pt !important;
+              color: #666;
+            }
+            
+            .print-meta {
+              display: flex;
+              justify-content: center;
+              flex-wrap: wrap;
+              gap: 12pt;
+              margin-bottom: 15pt;
+            }
+            
+            .print-meta-item {
+              display: flex;
+              align-items: center;
+              gap: 3pt;
+              font-size: 9pt !important;
+            }
+            
+            .print-icon {
+              width: 9pt;
+              height: 9pt;
+            }
+            
+            .print-category {
+              background-color: #f3f4f6;
+              padding: 1pt 6pt;
+              border-radius: 10pt;
+              font-size: 9pt !important;
+            }
+            
+            .print-content {
+              display: block;
+            }
+            
+            .print-section {
+              margin-bottom: 15pt;
+              break-inside: avoid-column;
+            }
+            
+            .print-section-title {
+              font-size: 14pt !important;
+              font-weight: bold;
+              margin-bottom: 8pt !important;
+              border-bottom: 1pt solid #ddd;
+              padding-bottom: 3pt;
+            }
+            
+            .print-list {
+              padding-left: 0;
+              list-style-type: none;
+              column-count: 2;
+              column-gap: 20pt;
+            }
+            
+            .print-list-item {
+              display: flex;
+              align-items: flex-start;
+              gap: 6pt;
+              margin-bottom: 6pt;
+              line-height: 1.3;
+              font-size: 9pt !important;
+              break-inside: avoid;
+            }
+            
+            .print-bullet {
+              width: 3pt;
+              height: 3pt;
+              border-radius: 50%;
+              background-color: #000;
+              margin-top: 6pt;
+              flex-shrink: 0;
+            }
+            
+            .print-section:last-child .print-list {
+              column-count: 1;
+            }
+            
+            .print-list-item-numbered {
+              display: flex;
+              align-items: flex-start;
+              gap: 6pt;
+              margin-bottom: 8pt;
+              line-height: 1.3;
+              font-size: 9pt !important;
+              break-inside: avoid;
+            }
+            
+            .print-number {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 14pt;
+              height: 14pt;
+              border-radius: 50%;
+              background-color: #000;
+              color: #fff;
+              font-size: 8pt;
+              font-weight: bold;
+              flex-shrink: 0;
+            }
+            
+            .print-instruction {
+              flex: 1;
+            }
+            
+            .print-footer {
+              margin-top: 15pt;
+              text-align: center;
+              font-size: 8pt;
+              color: #666;
+            }
+            
+            @page {
+              margin: 0.4in;
+              size: portrait;
+            }
+          }
+        `}
+      </style>
     </Layout>
   );
 };
