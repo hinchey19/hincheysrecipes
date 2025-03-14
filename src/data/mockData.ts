@@ -100,16 +100,6 @@ export const mockRecipes: RecipeProps[] = [
     ]
   },
   {
-    id: "2",
-    title: "Chicken Teriyaki",
-    description: "Juicy chicken thighs glazed with sweet and savory teriyaki sauce, served with steamed rice.",
-    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1180&auto=format&fit=crop",
-    prepTime: 25,
-    servings: 4,
-    category: "Japanese",
-    dateAdded: "2023-05-25"
-  },
-  {
     id: "4",
     title: "Korean Bibimbap",
     description: "A colorful mixed rice bowl topped with assorted vegetables, gochujang, and a fried egg.",
@@ -213,7 +203,7 @@ export const mockRecipes: RecipeProps[] = [
     ]
   },
   {
-    id: "16",
+    id: "17",
     title: "Basque Cheesecake (6-inch)",
     description: "A rustic Spanish-style cheesecake with a caramelized top and creamy, custard-like interior.",
     image: "https://cravinghomecooked.com/wp-content/uploads/2023/02/basque-cheesecake-1-15.jpg",
@@ -234,5 +224,15 @@ export const mockRecipes: RecipeProps[] = [
       "Bake the cheesecake: Preheat the oven to 400°F (200°C). Line a 6-inch round cake pan with parchment paper. Pour the batter into the pan and tap it gently on the counter to release any air bubbles. Bake for about 30 minutes, or until the top is deep golden brown and slightly jiggly in the center.",
       "Chill and serve: Let the cheesecake cool to room temperature. Refrigerate overnight for the best texture. Slice and enjoy a silky, custard-like cheesecake!"
     ]
+  },
+  {
+    id: "18",
+    title: "Chicken Teriyaki",
+    description: "Juicy chicken pieces cooked in a sweet and savory homemade teriyaki sauce, garnished with green onions and sesame seeds.",
+    image: "https://www.cookingclassy.com/wp-content/uploads/2018/04/teriyaki-chicken-12.jpg",
+    prepTime: 25,
+    servings: 4,
+    category: "Japanese",
+    dateAdded: "2023-07-05"
   }
 ];

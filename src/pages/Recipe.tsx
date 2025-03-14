@@ -24,6 +24,9 @@ import { mockRecipes } from "@/data/mockData";
 import { sushiBakeIngredients, sushiBakeInstructions } from "@/data/sushiBakeRecipe";
 import { roastedLambIngredients, roastedLambInstructions } from "@/data/roastedLambRecipe";
 import { padThaiIngredients, padThaiInstructions, padThaiTips } from "@/data/padThaiRecipe";
+import { chickenTeriyakiIngredients, chickenTeriyakiInstructions, chickenTeriyakiTips } from "@/data/chickenTeriyakiRecipe";
+import { bibimbapIngredients, bibimbapInstructions, bibimbapTips } from "@/data/bibimbapRecipe";
+import { mangoStickyRiceIngredients, mangoStickyRiceInstructions, mangoStickyRiceTips } from "@/data/mangoStickyRiceRecipe";
 import { cn } from "@/lib/utils";
 
 // Type for shopping list items
@@ -117,21 +120,53 @@ const Recipe = () => {
     "Taste and adjust seasoning if needed. Serve hot with your favorite toppings.",
   ];
 
-  // Set recipe-specific data
-  if (recipe?.ingredients && recipe?.instructions) {
-    // Use ingredients and instructions directly from the recipe object if they exist
-    ingredients = recipe.ingredients;
-    instructions = recipe.instructions;
-  } else if (slug === "0" || slug === "sushi-bake") {
+  // Load specific recipe data based on the recipe ID
+  if (recipe) {
+    if (recipe.id === "0") {
     ingredients = sushiBakeIngredients;
     instructions = sushiBakeInstructions;
-  } else if (slug === "13" || slug === "roasted-leg-of-lamb") {
+    } else if (recipe.id === "13") {
     ingredients = roastedLambIngredients;
     instructions = roastedLambInstructions;
-  } else if (slug === "easy-pad-thai" || slug === "1" || slug === "pad-thai") {
-    ingredients = padThaiIngredients;
-    instructions = padThaiInstructions;
-    tips = padThaiTips;
+    } else if (recipe.id === "14") {
+      ingredients = recipe.ingredients || ingredients;
+      instructions = recipe.instructions || instructions;
+    } else if (recipe.id === "18") {
+      ingredients = chickenTeriyakiIngredients;
+      instructions = chickenTeriyakiInstructions;
+      tips = chickenTeriyakiTips;
+    } else if (recipe.id === "4") {
+      ingredients = bibimbapIngredients;
+      instructions = bibimbapInstructions;
+      tips = bibimbapTips;
+    } else if (recipe.id === "19") {
+      ingredients = mangoStickyRiceIngredients;
+      instructions = mangoStickyRiceInstructions;
+      tips = mangoStickyRiceTips;
+    }
+  }
+
+  // Also check by slug for direct URL access
+  if (slug === "chicken-teriyaki") {
+    ingredients = chickenTeriyakiIngredients;
+    instructions = chickenTeriyakiInstructions;
+    tips = chickenTeriyakiTips;
+  } else if (slug === "korean-bibimbap") {
+    ingredients = bibimbapIngredients;
+    instructions = bibimbapInstructions;
+    tips = bibimbapTips;
+  } else if (slug === "mango-sticky-rice") {
+    ingredients = mangoStickyRiceIngredients;
+    instructions = mangoStickyRiceInstructions;
+    tips = mangoStickyRiceTips;
+  }
+
+  // Add recipe source reference for chicken teriyaki
+  let recipeSource = "";
+  if (recipe?.id === "18" || slug === "chicken-teriyaki") {
+    recipeSource = "Recipe adapted from: https://www.cookingclassy.com/teriyaki-chicken/";
+  } else if (recipe?.id === "4" || slug === "korean-bibimbap") {
+    recipeSource = "Recipe adapted from: https://mykoreankitchen.com/bibimbap-korean-mixed-rice-with-meat-and-assorted-vegetables/";
   }
 
   // Check if an ingredient is already in the shopping list
@@ -384,6 +419,9 @@ const Recipe = () => {
             </div>
             <Badge variant="secondary">{recipe.category}</Badge>
               </div>
+              {recipeSource && (
+                <p className="text-xs text-muted-foreground mb-4">{recipeSource}</p>
+              )}
             </div>
           </div>
           
@@ -797,6 +835,7 @@ const Recipe = () => {
           
           <div className="print-footer">
             <p>Recipe from Hinchey's Recipes</p>
+            {recipeSource && <p className="print-source">{recipeSource}</p>}
           </div>
         </div>
       </div>
@@ -966,6 +1005,12 @@ const Recipe = () => {
               text-align: center;
               font-size: 8pt;
               color: #666;
+            }
+            
+            .print-source {
+              font-size: 7pt;
+              margin-top: 4pt;
+              color: #888;
             }
             
             @page {
