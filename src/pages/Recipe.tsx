@@ -27,6 +27,11 @@ import { padThaiIngredients, padThaiInstructions, padThaiTips } from "@/data/pad
 import { chickenTeriyakiIngredients, chickenTeriyakiInstructions, chickenTeriyakiTips } from "@/data/chickenTeriyakiRecipe";
 import { bibimbapIngredients, bibimbapInstructions, bibimbapTips } from "@/data/bibimbapRecipe";
 import { mangoStickyRiceIngredients, mangoStickyRiceInstructions, mangoStickyRiceTips } from "@/data/mangoStickyRiceRecipe";
+import { vegetableSpringRollsIngredients, vegetableSpringRollsInstructions, vegetableSpringRollsTips, vegetableSpringRollsSauceIngredients } from "@/data/vegetableSpringRollsRecipe";
+import { shrimpFriedRiceIngredients, shrimpFriedRiceInstructions, shrimpFriedRiceTips } from "@/data/shrimpFriedRiceRecipe";
+import { matchaLatteIngredients, matchaLatteInstructions, matchaLatteTips } from "@/data/matchaLatteRecipe";
+import { spicyTunaRollsIngredients, spicyTunaRollsInstructions, spicyTunaRollsTips } from "@/data/spicyTunaRollsRecipe";
+import { greenPapayaSaladIngredients, greenPapayaSaladInstructions, greenPapayaSaladTips } from "@/data/greenPapayaSaladRecipe";
 import { cn } from "@/lib/utils";
 
 // Type for shopping list items
@@ -94,6 +99,26 @@ const Recipe = () => {
   // Add a variable for recipe tips
   let tips: string[] = [];
 
+  // Set recipe source
+  let recipeSource = "";
+  if (recipe?.id === "18" || slug === "chicken-teriyaki") {
+    recipeSource = "Recipe adapted from: https://www.cookingclassy.com/teriyaki-chicken/";
+  } else if (recipe?.id === "4" || slug === "korean-bibimbap") {
+    recipeSource = "Recipe adapted from: https://mykoreankitchen.com/bibimbap-korean-mixed-rice-with-meat-and-assorted-vegetables/";
+  } else if (recipe?.id === "6" || slug === "vegetable-spring-rolls") {
+    recipeSource = "Recipe adapted from: https://feelgoodfoodie.net/recipe/vegetable-spring-rolls/";
+  } else if (recipe?.id === "9" || slug === "shrimp-fried-rice") {
+    recipeSource = "Recipe adapted from: https://downshiftology.com/recipes/shrimp-fried-rice/";
+  } else if (recipe?.id === "10" || slug === "matcha-latte") {
+    recipeSource = "Recipe adapted from: https://www.loveandlemons.com/matcha-latte/";
+  } else if (recipe?.id === "11" || slug === "spicy-tuna-rolls") {
+    recipeSource = "Recipe adapted from: https://www.delish.com/cooking/recipe-ideas/a39996016/spicy-tuna-roll-recipe/";
+  } else if (recipe?.id === "15" || slug === "chinese-tomato-egg-stir-fry") {
+    recipeSource = "Recipe adapted from: https://hot-thai-kitchen.com/tomato-egg/";
+  } else if (recipe?.id === "7" || slug === "green-papaya-salad") {
+    recipeSource = "Recipe adapted from: https://hot-thai-kitchen.com/papaya-salad-v3/";
+  }
+
   // Default recipe data
   let ingredients = [
     "2 tablespoons olive oil",
@@ -131,6 +156,12 @@ const Recipe = () => {
     } else if (recipe.id === "14") {
       ingredients = recipe.ingredients || ingredients;
       instructions = recipe.instructions || instructions;
+    } else if (recipe.id === "15") {
+      ingredients = recipe.ingredients || ingredients;
+      instructions = recipe.instructions || instructions;
+    } else if (recipe.id === "17") {
+      ingredients = recipe.ingredients || ingredients;
+      instructions = recipe.instructions || instructions;
     } else if (recipe.id === "18") {
       ingredients = chickenTeriyakiIngredients;
       instructions = chickenTeriyakiInstructions;
@@ -139,10 +170,53 @@ const Recipe = () => {
       ingredients = bibimbapIngredients;
       instructions = bibimbapInstructions;
       tips = bibimbapTips;
-    } else if (recipe.id === "19") {
+    } else if (recipe.id === "5") {
       ingredients = mangoStickyRiceIngredients;
       instructions = mangoStickyRiceInstructions;
       tips = mangoStickyRiceTips;
+    } else if (recipe.id === "6") {
+      // Combine both regular ingredients and sauce ingredients
+      ingredients = [
+        ...vegetableSpringRollsIngredients.map(item => 
+          `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+        ),
+        "For the Peanut Sauce:",
+        ...vegetableSpringRollsSauceIngredients.map(item => 
+          `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+        )
+      ];
+      instructions = vegetableSpringRollsInstructions;
+      tips = vegetableSpringRollsTips;
+    } else if (recipe.id === "7") {
+      ingredients = greenPapayaSaladIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      );
+      instructions = greenPapayaSaladInstructions;
+      tips = greenPapayaSaladTips;
+    } else if (recipe.id === "9") {
+      ingredients = shrimpFriedRiceIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      );
+      instructions = shrimpFriedRiceInstructions;
+      tips = shrimpFriedRiceTips;
+    } else if (recipe.id === "10") {
+      ingredients = matchaLatteIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      );
+      instructions = matchaLatteInstructions;
+      tips = matchaLatteTips;
+    } else if (recipe.id === "11") {
+      ingredients = spicyTunaRollsIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      );
+      instructions = spicyTunaRollsInstructions;
+      tips = spicyTunaRollsTips;
+    } else if (slug === "chinese-tomato-egg-stir-fry") {
+      const tomatoEggRecipe = mockRecipes.find(r => r.id === "15");
+      if (tomatoEggRecipe) {
+        ingredients = tomatoEggRecipe.ingredients || ingredients;
+        instructions = tomatoEggRecipe.instructions || instructions;
+      }
     }
   }
 
@@ -159,14 +233,45 @@ const Recipe = () => {
     ingredients = mangoStickyRiceIngredients;
     instructions = mangoStickyRiceInstructions;
     tips = mangoStickyRiceTips;
-  }
-
-  // Add recipe source reference for chicken teriyaki
-  let recipeSource = "";
-  if (recipe?.id === "18" || slug === "chicken-teriyaki") {
-    recipeSource = "Recipe adapted from: https://www.cookingclassy.com/teriyaki-chicken/";
-  } else if (recipe?.id === "4" || slug === "korean-bibimbap") {
-    recipeSource = "Recipe adapted from: https://mykoreankitchen.com/bibimbap-korean-mixed-rice-with-meat-and-assorted-vegetables/";
+  } else if (slug === "vegetable-spring-rolls") {
+    // Combine both regular ingredients and sauce ingredients
+    ingredients = [
+      ...vegetableSpringRollsIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      ),
+      "For the Peanut Sauce:",
+      ...vegetableSpringRollsSauceIngredients.map(item => 
+        `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+      )
+    ];
+    instructions = vegetableSpringRollsInstructions;
+    tips = vegetableSpringRollsTips;
+  } else if (slug === "green-papaya-salad") {
+    ingredients = greenPapayaSaladIngredients.map(item => 
+      `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+    );
+    instructions = greenPapayaSaladInstructions;
+    tips = greenPapayaSaladTips;
+  } else if (recipe?.id === "9" || slug === "shrimp-fried-rice") {
+    ingredients = shrimpFriedRiceIngredients.map(item => 
+      `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+    );
+    instructions = shrimpFriedRiceInstructions;
+    tips = shrimpFriedRiceTips;
+  } else if (recipe?.id === "10" || slug === "matcha-latte") {
+    ingredients = matchaLatteIngredients.map(item => 
+      `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+    );
+    instructions = matchaLatteInstructions;
+    tips = matchaLatteTips;
+  } else if (recipe?.id === "11" || slug === "spicy-tuna-rolls") {
+    ingredients = spicyTunaRollsIngredients.map(item => 
+      `${item.amount} ${item.unit} ${item.name}${item.notes ? ` (${item.notes})` : ''}`
+    );
+    instructions = spicyTunaRollsInstructions;
+    tips = spicyTunaRollsTips;
+  } else if (recipe?.id === "15" || slug === "chinese-tomato-egg-stir-fry") {
+    recipeSource = "Recipe adapted from: https://hot-thai-kitchen.com/tomato-egg/";
   }
 
   // Check if an ingredient is already in the shopping list
@@ -178,8 +283,10 @@ const Recipe = () => {
 
   const handleSelectAllIngredients = () => {
     // Filter out ingredients that are already in the shopping list
+    // and also exclude section headers like "For the Peanut Sauce:"
     const newIngredientsToAdd = ingredients.filter(ingredient => 
-      !isIngredientInShoppingList(ingredient)
+      !isIngredientInShoppingList(ingredient) && 
+      ingredient !== "For the Peanut Sauce:"
     );
     
     setIngredientsToAdd(newIngredientsToAdd);
@@ -334,6 +441,9 @@ const Recipe = () => {
   };
 
   const toggleIngredient = (ingredient: string) => {
+    // Don't toggle section headers like "For the Peanut Sauce:"
+    if (ingredient === "For the Peanut Sauce:") return;
+    
     setIngredientsToAdd(prev => 
       prev.includes(ingredient)
         ? prev.filter(item => item !== ingredient)
@@ -630,30 +740,34 @@ const Recipe = () => {
                       <div className="max-h-[50vh] overflow-y-auto pr-2">
                         <ul className="space-y-2">
                           {ingredients.map((ingredient, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <Checkbox 
-                                id={`ingredient-${index}`}
-                                checked={ingredientsToAdd.includes(ingredient)}
-                                onCheckedChange={() => toggleIngredient(ingredient)}
-                                disabled={isIngredientInShoppingList(ingredient)}
-                              />
-                              <div className="grid gap-1.5 leading-none">
-                                <label
-                                  htmlFor={`ingredient-${index}`}
-                                  className={cn(
-                                    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-                                    isIngredientInShoppingList(ingredient) && "line-through text-muted-foreground"
+                            ingredient === "For the Peanut Sauce:" ? (
+                              <li key={index} className="font-medium text-base mt-4 mb-2">{ingredient}</li>
+                            ) : (
+                              <li key={index} className="flex items-start gap-2">
+                                <Checkbox 
+                                  id={`ingredient-${index}`}
+                                  checked={ingredientsToAdd.includes(ingredient)}
+                                  onCheckedChange={() => toggleIngredient(ingredient)}
+                                  disabled={isIngredientInShoppingList(ingredient)}
+                                />
+                                <div className="grid gap-1.5 leading-none">
+                                  <label
+                                    htmlFor={`ingredient-${index}`}
+                                    className={cn(
+                                      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                                      isIngredientInShoppingList(ingredient) && "line-through text-muted-foreground"
+                                    )}
+                                  >
+                                    {ingredient}
+                                  </label>
+                                  {isIngredientInShoppingList(ingredient) && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Already in shopping list
+                                    </p>
                                   )}
-                                >
-                                  {ingredient}
-                                </label>
-                                {isIngredientInShoppingList(ingredient) && (
-                                  <p className="text-xs text-muted-foreground">
-                                    Already in shopping list
-                                  </p>
-                                )}
-                              </div>
-                            </li>
+                                </div>
+                              </li>
+                            )
                           ))}
                         </ul>
                       </div>
@@ -755,10 +869,14 @@ const Recipe = () => {
               <div className="bg-card rounded-lg p-4 sm:p-6 border border-border">
                 <ul className="space-y-3">
                   {ingredients.map((ingredient, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-2" />
-                      <span className="text-base">{ingredient}</span>
-                    </li>
+                    ingredient === "For the Peanut Sauce:" ? (
+                      <li key={index} className="font-medium text-base mt-4 mb-2">{ingredient}</li>
+                    ) : (
+                      <li key={index} className="flex items-start gap-3">
+                        <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-2" />
+                        <span className="text-base">{ingredient}</span>
+                      </li>
+                    )
                   ))}
                 </ul>
               </div>
@@ -812,10 +930,14 @@ const Recipe = () => {
               <h2 className="print-section-title">Ingredients</h2>
               <ul className="print-list">
                 {ingredients.map((ingredient, index) => (
-                  <li key={index} className="print-list-item">
-                    <div className="print-bullet" />
+                  ingredient === "For the Peanut Sauce:" ? (
+                    <li key={index} className="print-section-subtitle">{ingredient}</li>
+                  ) : (
+                    <li key={index} className="print-list-item">
+                      <div className="print-bullet" />
                     <span>{ingredient}</span>
                   </li>
+                  )
                 ))}
               </ul>
             </div>
@@ -946,6 +1068,13 @@ const Recipe = () => {
               margin-bottom: 8pt !important;
               border-bottom: 1pt solid #ddd;
               padding-bottom: 3pt;
+            }
+            
+            .print-section-subtitle {
+              font-size: 11pt !important;
+              font-weight: bold;
+              margin-top: 10pt !important;
+              margin-bottom: 5pt !important;
             }
             
             .print-list {
