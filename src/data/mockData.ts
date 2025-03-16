@@ -122,17 +122,17 @@ export const mockRecipes: RecipeProps[] = [
   {
     id: "6",
     title: "Vegetable Spring Rolls",
-    description: "Crispy fried rolls filled with vegetables, glass noodles, and mushrooms, served with dipping sauce.",
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1769&auto=format&fit=crop",
-    prepTime: 35,
-    servings: 6,
+    description: "Fresh and colorful veggies rolled up in Vietnamese rice paper and served with a creamy peanut sauce for a delicious appetizer.",
+    image: "https://www.happyfoodstube.com/wp-content/uploads/2018/03/vegetarian-fresh-spring-rolls-image.jpg",
+    prepTime: 15,
+    servings: 4,
     category: "Appetizer",
     dateAdded: "2023-06-05"
   },
   {
     id: "9",
     title: "Shrimp Fried Rice",
-    description: "Quick and flavorful wok-fried rice with shrimp, eggs, peas, and green onions.",
+    description: "A delicious 20-minute meal with succulent shrimp, fluffy rice, colorful vegetables, and savory Asian-inspired flavors.",
     image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=1925&auto=format&fit=crop",
     prepTime: 20,
     servings: 4,
