@@ -12,8 +12,8 @@ export const bibimbapIngredients = [
   "100g (3.5 ounces) shiitake mushrooms",
   "120g (4.2 ounces) carrots (1 small)",
   "1/2 tsp fine sea salt (for cooking mushrooms and carrots)",
-  "3 to 4 serving portions of steamed rice",
-  "3 or 4 eggs (depending on the serving portion)",
+  "4 total serving portions of steamed rice",
+  "4 total eggs (depending on the serving portion)",
   "Some cooking oil (for cooking the meat, mushroom, carrots and eggs)",
   "Some toasted seasoned seaweed, shredded (long thin cut)",
   "For bibimbap sauce: 2 Tbsp gochujang (Korean chili paste), 1 Tbsp sesame oil, 1 Tbsp sugar, 1 Tbsp water, 1 Tbsp toasted sesame seeds, 1 tsp vinegar (apple vinegar recommended), 1 tsp minced garlic"

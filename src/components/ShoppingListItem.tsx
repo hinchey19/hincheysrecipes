@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Check, Trash } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +10,9 @@ export interface ShoppingItemProps {
   quantity: string;
   category: string;
   checked: boolean;
+  recipeId?: string;
+  recipeName?: string;
+  ingredient?: string;
 }
 
 interface ShoppingListItemProps {

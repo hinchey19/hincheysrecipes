@@ -140,13 +140,11 @@ export const Layout = ({ children }: LayoutProps) => {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
+              {/* Search button removed */}
             </div>
           </header>
           <main className="flex-1 overflow-auto">
-            <div className="container py-6 md:py-8 lg:py-10 px-4 md:px-6 lg:px-8 animate-fade-in">
+            <div className="w-full py-2 px-2 md:px-4 lg:pl-8 lg:pr-0 animate-fade-in">
               {children}
             </div>
           </main>

@@ -58,25 +58,32 @@ const ShoppingList = () => {
         if (Array.isArray(parsedItems)) {
           return parsedItems.map(item => {
             // Handle both old and new data structures
-            if (item.ingredient) {
+            if (item.ingredient && !item.name) {
               // This is from the Recipe component
+              // Parse the ingredient string to extract quantity and name
+              const ingredientParts = parseIngredientString(item.ingredient);
+              
               return {
                 id: item.id || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                name: item.name || item.ingredient || 'Unknown Item',
-                quantity: item.quantity || '1',
+                name: ingredientParts.name || 'Unknown Item',
+                quantity: ingredientParts.quantity || '1',
                 category: item.category || 'Other',
                 checked: item.checked || false,
                 recipeId: item.recipeId,
-                recipeName: item.recipeName
+                recipeName: item.recipeName,
+                ingredient: item.ingredient // Preserve original ingredient string
               };
             } else {
-              // This is already in the correct format
+              // This is already in the correct format or from MealPlanner
               return {
                 id: item.id || Date.now().toString(),
                 name: item.name || 'Unknown Item',
                 quantity: item.quantity || '1',
                 category: item.category || 'Other',
-                checked: item.checked || false
+                checked: item.checked || false,
+                recipeId: item.recipeId,
+                recipeName: item.recipeName,
+                ingredient: item.ingredient // Preserve original ingredient string if it exists
               };
             }
           });
@@ -88,6 +95,40 @@ const ShoppingList = () => {
       console.error('Error loading shopping list from localStorage:', error);
       return initialItems;
     }
+  };
+  
+  // Helper function to parse ingredient strings
+  const parseIngredientString = (ingredient: string) => {
+    // Regular expressions to match different formats
+    // Format: "1/2 lb salmon, seasoned to preference" or "3 oz cream cheese"
+    const basicMatch = /^([\d./]+)\s+(\w+)\s+(.+?)(\s+\(.*\))?$/;
+    
+    // Format: "1 TBSP sriracha" or "2-3 cups cooked rice"
+    const tbspOrCupsMatch = /^([\d./-]+)\s+(TBSP|tbsp|cups|cup)\s+(.+?)(\s+\(.*\))?$/i;
+    
+    let quantity = "";
+    let unit = "";
+    let name = "";
+    let notes = "";
+    
+    const basicResult = ingredient.match(basicMatch);
+    const tbspResult = ingredient.match(tbspOrCupsMatch);
+    
+    if (tbspResult) {
+      quantity = `${tbspResult[1]} ${tbspResult[2]}`;
+      name = tbspResult[3];
+      notes = tbspResult[4] || "";
+    } else if (basicResult) {
+      quantity = `${basicResult[1]} ${basicResult[2]}`;
+      name = basicResult[3];
+      notes = basicResult[4] || "";
+    } else {
+      // If no match, just use the whole string as the name
+      name = ingredient;
+      quantity = "1";
+    }
+    
+    return { quantity, name, notes };
   };
 
   const [items, setItems] = useState<ShoppingItemProps[]>(loadItemsFromStorage());

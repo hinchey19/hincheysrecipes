@@ -105,7 +105,7 @@ export const mockRecipes: RecipeProps[] = [
     description: "A colorful mixed rice bowl topped with assorted vegetables, gochujang, and a fried egg.",
     image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=1975&auto=format&fit=crop",
     prepTime: 35,
-    servings: 2,
+    servings: 4,
     category: "Korean",
     dateAdded: "2023-05-30"
   },
@@ -145,7 +145,7 @@ export const mockRecipes: RecipeProps[] = [
     description: "Creamy beverage made with Japanese green tea powder and frothed milk, served hot or iced.",
     image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=1770&auto=format&fit=crop",
     prepTime: 5,
-    servings: 2,
+    servings: 1,
     category: "Beverage",
     dateAdded: "2023-06-15"
   },
@@ -229,7 +229,7 @@ export const mockRecipes: RecipeProps[] = [
     id: "18",
     title: "Chicken Teriyaki",
     description: "Juicy chicken pieces cooked in a sweet and savory homemade teriyaki sauce, garnished with green onions and sesame seeds.",
-    image: "https://www.cookingclassy.com/wp-content/uploads/2018/04/teriyaki-chicken-12.jpg",
+    image: "https://www.onceuponachef.com/images/2024/01/chicken-teriyaki-480x270.jpg",
     prepTime: 25,
     servings: 4,
     category: "Japanese",

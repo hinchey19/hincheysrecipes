@@ -36,9 +36,14 @@ import { cn } from "@/lib/utils";
 
 // Type for shopping list items
 interface ShoppingListItem {
-  ingredient: string;
-  recipeId: string;
-  recipeName: string;
+  id?: string;
+  ingredient?: string;  // Used by Recipe page
+  name?: string;        // Used by MealPlanner page
+  quantity?: string;
+  category?: string;
+  checked?: boolean;
+  recipeId?: string;
+  recipeName?: string;
 }
 
 // Type for meal plan
@@ -78,6 +83,18 @@ const Recipe = () => {
   const [activeTab, setActiveTab] = useState("ingredients");
   const [ingredientsToAdd, setIngredientsToAdd] = useState<string[]>([]);
   const [showMealTypeDialog, setShowMealTypeDialog] = useState(false);
+
+  // Define ShoppingListItem interface
+  interface ShoppingListItem {
+    id?: string;
+    ingredient?: string;  // Used by Recipe page
+    name?: string;        // Used by MealPlanner page
+    quantity?: string;
+    category?: string;
+    checked?: boolean;
+    recipeId?: string;
+    recipeName?: string;
+  }
 
   // Get shopping list from localStorage or initialize empty array
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
@@ -276,9 +293,58 @@ const Recipe = () => {
 
   // Check if an ingredient is already in the shopping list
   const isIngredientInShoppingList = (ingredient: string) => {
-    return shoppingList.some(item => 
-      item.ingredient === ingredient && item.recipeId === recipe?.id
-    );
+    // First, try to parse the ingredient to get name, quantity, etc.
+    const parsedIngredient = parseIngredient(ingredient);
+    
+    return shoppingList.some(item => {
+      // Check if the full ingredient string matches (for items added from recipe page)
+      if (item.ingredient === ingredient && item.recipeId === recipe?.id) {
+        return true;
+      }
+      
+      // Check if the name and recipe matches (for items added from meal planner)
+      if (item.name === parsedIngredient.name && item.recipeId === recipe?.id) {
+        return true;
+      }
+      
+      return false;
+    });
+  };
+  
+  // Helper function to parse ingredient string similar to the one in MealPlanner
+  const parseIngredient = (ingredient: string) => {
+    // Regular expressions to match different formats
+    // Format: "1/2 lb salmon, seasoned to preference" or "3 oz cream cheese"
+    const basicMatch = /^([\d./]+)\s+(\w+)\s+(.+?)(\s+\(.*\))?$/;
+    
+    // Format: "1 TBSP sriracha" or "2-3 cups cooked rice"
+    const tbspOrCupsMatch = /^([\d./-]+)\s+(TBSP|tbsp|cups|cup)\s+(.+?)(\s+\(.*\))?$/i;
+    
+    let quantity = "";
+    let unit = "";
+    let name = "";
+    let notes = "";
+    
+    const basicResult = ingredient.match(basicMatch);
+    const tbspResult = ingredient.match(tbspOrCupsMatch);
+    
+    if (tbspResult) {
+      quantity = tbspResult[1];
+      unit = tbspResult[2];
+      name = tbspResult[3];
+      notes = tbspResult[4] || "";
+    } else if (basicResult) {
+      quantity = basicResult[1];
+      unit = basicResult[2];
+      name = basicResult[3];
+      notes = basicResult[4] || "";
+    } else {
+      // If no match, just use the whole string as the name
+      name = ingredient;
+      quantity = "1";
+    }
+    
+    return { quantity, unit, name, notes };
   };
 
   const handleSelectAllIngredients = () => {
@@ -307,15 +373,21 @@ const Recipe = () => {
     const newItems: ShoppingListItem[] = [];
     
     ingredientsToAdd.forEach(ingredient => {
-      const isDuplicate = shoppingList.some(
-        item => item.ingredient === ingredient && item.recipeId === recipe?.id
-      );
+      const isDuplicate = isIngredientInShoppingList(ingredient);
       
       if (isDuplicate) {
         duplicates.push(ingredient);
       } else {
+        // Parse the ingredient to get structured data
+        const parsedIngredient = parseIngredient(ingredient);
+        
         newItems.push({
-          ingredient,
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          ingredient: ingredient, // Keep the original ingredient string
+          name: parsedIngredient.name, // Also store the parsed name
+          quantity: `${parsedIngredient.quantity} ${parsedIngredient.unit}`.trim(),
+          category: "ingredient",
+          checked: false,
           recipeId: recipe?.id || '',
           recipeName: recipe?.title || ''
         });
