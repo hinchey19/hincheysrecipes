@@ -38,8 +38,9 @@ const Index = () => {
           </div>
           <div className="hero-note"><ShieldCheck size={17} /> Independent access to leading carriers</div>
         </div>
-        <div className="hero-art" aria-label="Abstract layered illustration representing protection" role="img">
-          <div className="art-circle art-circle-back" /><div className="art-circle art-circle-mid" /><div className="art-circle art-circle-front"><span>HI</span></div>
+        <div className="hero-art" aria-label="Hinchey Insurance founder standing in Yosemite" role="img">
+          <img className="founder-photo" src="/hinchey-founder.jpeg" alt="Hinchey Insurance founder outdoors in Yosemite" />
+          <div className="photo-wash" />
           <div className="art-label label-one">Built around<br /><strong>your business</strong></div>
           <div className="art-label label-two">01 <span>—</span> Protection, with perspective</div>
         </div>
