@@ -1,193 +1,66 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { ChevronRight, Clock, Users, Search } from "lucide-react";
-import { Layout } from "@/components/Layout";
-import { RecipeCard, RecipeProps } from "@/components/RecipeCard";
-import { SearchBar } from "@/components/SearchBar";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { mockRecipes } from "@/data/mockData";
+import { ArrowUpRight, Check, ChevronRight, Menu, ShieldCheck, Sparkles } from "lucide-react";
+import { useState } from "react";
 
-// Helper function to generate a slug from a string
-const generateSlug = (text: string): string => {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-')     // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-')   // Replace multiple - with single -
-    .replace(/^-+/, '')       // Trim - from start of text
-    .replace(/-+$/, '');      // Trim - from end of text
-};
+const coverage = [
+  { title: "Commercial property", copy: "Protect the places, equipment, and assets that keep your business moving." },
+  { title: "General liability", copy: "Coverage that helps you confidently take on customers, clients, and contracts." },
+  { title: "Professional liability", copy: "A thoughtful layer of protection for the advice and expertise you provide." },
+];
 
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  
-  // Filter recipes based on search query
-  const filteredRecipes = mockRecipes.filter(
-    (recipe) =>
-      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Get featured recipe (Roasted Leg of Lamb)
-  const featuredRecipe = mockRecipes.find(recipe => recipe.id === "13") || mockRecipes[0];
-  const featuredRecipeSlug = featuredRecipe ? generateSlug(featuredRecipe.title) : "";
-  
-  // Get latest 4 recipes sorted by dateAdded (newest first)
-  const latestRecipes = [...mockRecipes]
-    .sort((a, b) => {
-      // If dateAdded is available, use it for sorting
-      if (a.dateAdded && b.dateAdded) {
-        return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-      }
-      // Fallback to ID sorting if dateAdded is not available
-      return parseInt(b.id) - parseInt(a.id);
-    })
-    .slice(0, 4);
-  
-  // Group recipes by category
-  const recipesByCategory = mockRecipes.reduce((acc, recipe) => {
-    if (!acc[recipe.category]) {
-      acc[recipe.category] = [];
-    }
-    acc[recipe.category].push(recipe);
-    return acc;
-  }, {} as Record<string, RecipeProps[]>);
-
-  // Determine what to display based on search query
-  const showSearchResults = searchQuery.trim() !== "";
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <Layout>
-      <div className="space-y-8">
-        {/* Hero Section - Hide when searching */}
-        {!showSearchResults && (
-          <section className="relative rounded-xl overflow-hidden h-[300px] md:h-[400px]">
-            {featuredRecipe && (
-              <>
-                <div className="absolute inset-0">
-                  <img 
-                    src={featuredRecipe.image} 
-                    alt={featuredRecipe.title} 
-                    className="w-full h-full object-cover" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <div className="max-w-3xl">
-                    <span className="inline-block mb-2 text-sm font-medium px-3 py-1 rounded-full bg-primary/80 backdrop-blur-sm">
-                      Featured Recipe
-                    </span>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">{featuredRecipe.title}</h1>
-                    <p className="text-white/80 mb-4 line-clamp-2">{featuredRecipe.description}</p>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="flex items-center text-white/80">
-                        <Clock className="h-4 w-4 mr-1" />
-                        <span className="text-sm">{featuredRecipe.prepTime} min</span>
-                      </div>
-                      <div className="flex items-center text-white/80">
-                        <Users className="h-4 w-4 mr-1" />
-                        <span className="text-sm">{featuredRecipe.servings} servings</span>
-                      </div>
-                    </div>
-                    <Link to={`/recipe/${featuredRecipeSlug}`}>
-                      <Button variant="default">
-                        View Recipe
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </>
-            )}
-          </section>
-        )}
+    <main className="site-shell">
+      <div className="announcement">Independent advice for the way you do business <span>•</span> Serving businesses across California</div>
+      <header className="site-header">
+        <a className="brand" href="#top" aria-label="Hinchey Insurance home">
+          <span className="brand-mark">H</span>
+          <span>Hinchey <em>Insurance</em></span>
+        </a>
+        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Toggle navigation"><Menu size={21} /></button>
+        <nav className={menuOpen ? "nav-links is-open" : "nav-links"}>
+          <a href="#approach">Our approach</a>
+          <a href="#coverage">Business coverage</a>
+          <a href="#about">About us</a>
+          <a className="nav-cta" href="#contact">Start a conversation <ArrowUpRight size={16} /></a>
+        </nav>
+      </header>
 
-        {/* Search Section */}
-        <section className="max-w-xl mx-auto">
-          <div className="relative">
-            <SearchBar
-              onSearch={setSearchQuery}
-              className="w-full"
-              placeholder="Search recipes, ingredients, or categories..."
-            />
+      <section id="top" className="hero-section">
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="eyebrow-line" /> Independent, on your side</p>
+          <h1>Better coverage.<br /><i>Clearer confidence.</i></h1>
+          <p className="hero-intro">Insurance should help you move forward, not hold you back. Hinchey Insurance brings smart, personal guidance to the businesses building what comes next.</p>
+          <div className="hero-actions">
+            <a className="button button-primary" href="#contact">Talk with a broker <ArrowUpRight size={17} /></a>
+            <a className="text-link" href="#coverage">Explore coverage <ChevronRight size={17} /></a>
           </div>
-        </section>
+          <div className="hero-note"><ShieldCheck size={17} /> Independent access to leading carriers</div>
+        </div>
+        <div className="hero-art" aria-label="Abstract layered illustration representing protection" role="img">
+          <div className="art-circle art-circle-back" /><div className="art-circle art-circle-mid" /><div className="art-circle art-circle-front"><span>HI</span></div>
+          <div className="art-label label-one">Built around<br /><strong>your business</strong></div>
+          <div className="art-label label-two">01 <span>—</span> Protection, with perspective</div>
+        </div>
+      </section>
 
-        {/* Search Results - Show only when searching */}
-        {showSearchResults && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Search Results</h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setSearchQuery("")}
-                className="text-sm"
-              >
-                Clear Search
-              </Button>
-            </div>
-            {filteredRecipes.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredRecipes.map(recipe => (
-                  <RecipeCard key={recipe.id} recipe={recipe} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No recipes found matching "{searchQuery}"</p>
-              </div>
-            )}
-          </section>
-        )}
+      <section id="approach" className="statement-section">
+        <div className="section-kicker">Why Hinchey</div>
+        <div><h2>Insurance is personal<br />when <i>business</i> is personal.</h2><p>We take time to understand the full picture: where you are today, where you are headed, and what could get in the way. Then we make the complex feel simple.</p></div>
+      </section>
 
-        {/* Latest Recipes - Hide when searching */}
-        {!showSearchResults && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Latest Recipes</h2>
-              <Link to="/recipes" className="text-sm text-primary flex items-center hover:underline">
-                View all <ChevronRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {latestRecipes.map(recipe => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
-            </div>
-          </section>
-        )}
+      <section id="coverage" className="coverage-section">
+        <div className="section-heading"><div><div className="section-kicker">Coverage, considered</div><h2>Protection for the<br /><i>work you’re proud of.</i></h2></div><p>From your first policy to your next chapter, we help you make confident decisions about the risks that matter most.</p></div>
+        <div className="coverage-grid">{coverage.map((item, index) => <article className="coverage-card" key={item.title}><span className="card-number">0{index + 1}</span><h3>{item.title}</h3><p>{item.copy}</p><a href="#contact" aria-label={`Learn about ${item.title}`}>Learn more <ArrowUpRight size={16} /></a></article>)}</div>
+      </section>
 
-        {/* Categories Section - Hide when searching */}
-        {!showSearchResults && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Recipe Categories</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {Object.entries(recipesByCategory).map(([category, recipes]) => (
-                <Link to={`/recipes?category=${category}`} key={category}>
-                  <Card className="h-32 overflow-hidden group relative transition-all hover:shadow-md">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
-                    {recipes[0] && (
-                      <img
-                        src={recipes[0].image}
-                        alt={category}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                      />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <h3 className="text-white text-xl font-semibold">{category}</h3>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-    </Layout>
+      <section id="about" className="about-section"><div className="about-accent"><Sparkles size={22} /><span>More than a policy.<br /><strong>A relationship.</strong></span></div><div><div className="section-kicker">A broker who listens</div><h2>Good advice starts<br />with a good <i>conversation.</i></h2><p>We’re here to translate the fine print, ask the next question, and be a steady partner through every season of your business.</p><a className="text-link dark-link" href="#contact">Meet Hinchey Insurance <ArrowUpRight size={17} /></a></div></section>
+
+      <section id="contact" className="contact-section"><div><div className="section-kicker">Let’s talk business</div><h2>Ready for coverage<br />that keeps <i>up?</i></h2></div><div className="contact-right"><p>Tell us a little about what you’re building. We’ll be in touch with a thoughtful next step.</p><a className="button button-light" href="mailto:hello@hincheyinsurance.com">Start a conversation <ArrowUpRight size={17} /></a><div className="contact-details"><span>hello@hincheyinsurance.com</span><span>California · By appointment</span></div></div></section>
+
+      <footer><a className="brand footer-brand" href="#top"><span className="brand-mark">H</span><span>Hinchey <em>Insurance</em></span></a><span>Independent insurance for independent businesses.</span><span>© 2026 Hinchey Insurance</span></footer>
+    </main>
   );
 };
 
